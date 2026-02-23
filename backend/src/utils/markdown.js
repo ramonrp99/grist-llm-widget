@@ -1,3 +1,5 @@
+const { marked } = require('marked')
+
 // Divide tabla markdown en filas
 const splitTableIntoRows = (table) => {
     return table
@@ -21,4 +23,10 @@ const extractTable = (text) => {
     }
 }
 
-module.exports = { splitTableIntoRows, extractTable }
+const isTable = (text) => {
+    const tokens = marked.lexer(text)
+
+    return tokens.some(token => token.type === 'table')
+}
+
+module.exports = { splitTableIntoRows, extractTable, isTable }
