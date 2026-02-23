@@ -3,7 +3,7 @@ const config = require('../config/env')
 const { isTable } = require('../utils/markdown')
 
 const messageSchema = z.object({
-    role: z.enum(['system', 'user', 'assistant']),
+    role: z.enum(['user', 'assistant']),
     content: z.string().nonempty().max(config.schemas.messagesSchema.content.maxLength)
 })
 
