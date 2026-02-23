@@ -1,5 +1,6 @@
 const z = require('zod')
 const config = require('../config/env')
+const { isTable } = require('../utils/markdown')
 
 const messageSchema = z.object({
     role: z.enum(['system', 'user', 'assistant']),
@@ -7,9 +8,21 @@ const messageSchema = z.object({
 })
 
 const promptSchema = z.object({
-    model: z.string().nonempty().max(config.schemas.promptSchema.model.maxLength),
-    prompt: z.string().nonempty().max(config.schemas.promptSchema.prompt.maxLength),
-    context: z.string().nonempty().max(config.schemas.promptSchema.context.maxLength),
+    model: z.string()
+            .nonempty()
+            .max(config.schemas.promptSchema.model.maxLength),
+
+    prompt: z.string()
+             .nonempty()
+             .max(config.schemas.promptSchema.prompt.maxLength),
+
+    context: z.string()
+              .nonempty()
+              .max(config.schemas.promptSchema.context.maxLength)
+              .refine((val) => isTable(val), {
+                  error: 'El formato del contexto no es válido. Debe ser una tabla Markdown.'
+              }),
+
     messages: z.array(messageSchema)
 })
 
