@@ -4,13 +4,9 @@ const { extractTable } = require('../utils/markdown')
 
 const { availableModels } = require('../config/models')
 
-const getModels = async(req, res) => {
+const getModels = async(req, res, next) => {
     try {
         const response = await aiService.getAvailableModels()
-
-        if (!response.ok) {
-            return res.json(response)
-        }
 
         // La API de OpenRouter siempre devuelve todos sus modelos disponibles
         // Únicamente se devuelven los que se encuentren listados en models.json
@@ -28,31 +24,17 @@ const getModels = async(req, res) => {
             data: models
         })
     } catch (err) {
-        res.status(400).json({
-            ok: false,
-            error: err.message
-        })
+        next(err)
     }
 }
 
-const generateCompletion = async(req, res) => {
-    const { model, prompt, context, messages } = req.body
-
-    const totalMessages = buildChatMessages(prompt, context, messages)
-
-    if (!totalMessages.ok) {
-        return res.status(400).json({
-            ok: false,
-            error: totalMessages.error
-        })
-    }
-
+const generateCompletion = async(req, res, next) => {
     try {
-        const response = await aiService.generateCompletion(model, totalMessages.data)
+        const { model, prompt, context, messages } = req.body
 
-        if (!response.ok) {
-            return res.json(response)
-        }
+        const totalMessages = buildChatMessages(prompt, context, messages)
+
+        const response = await aiService.generateCompletion(model, totalMessages.data)
 
         const estructuredResponse = extractTable(response.data)
 
@@ -62,10 +44,7 @@ const generateCompletion = async(req, res) => {
             data: estructuredResponse.table
         })
     } catch (err) {
-        res.status(400).json({
-            ok: false,
-            error: err.message
-        })
+        next(err)
     }
 }
 

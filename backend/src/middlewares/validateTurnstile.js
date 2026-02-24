@@ -1,13 +1,11 @@
 const config = require('../config/env')
+const AppError = require('../utils/AppError')
 
 const validateTurnstile = async (req, res, next) => {
     const token = req.headers['cf-turnstile-token']
 
     if (!token) {
-        return res.status(400).json({
-            ok: false,
-            error: 'Token de seguridad requerido.'
-        })
+        return next(new AppError(400, 'Token de seguridad requerido.'))
     }
 
     try {
@@ -25,21 +23,14 @@ const validateTurnstile = async (req, res, next) => {
 
         const result = await response.json()
 
-        if (!result.success) {
-            return res.status(400).json({
-                ok: false,
-                error: 'Token de seguridad inválido o expirado'
-            })
+        if (!result.success || result.error) {
+            return next(new AppError(401, 'Token de seguridad inválido o expirado.'))
         }
 
         next()
     } catch (err) {
-        console.error(`Error en llamada a /siteverify de CloudFlare Turnstile: ${err}`)
-
-        return {
-            ok: false,
-            error: err
-        }
+        console.error('Error al validar el token de seguridad de CloudFlare Turnstile:', err)
+        next(new AppError(500, 'Error al validar el token de seguridad de CloudFlare Turnstile'))
     }
 
 }

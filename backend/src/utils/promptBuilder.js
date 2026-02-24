@@ -1,6 +1,7 @@
 const config = require('../config/env')
 const { countTokens } = require('./tokenizer')
 const { splitTableIntoRows } = require('./markdown')
+const AppError = require('./AppError')
 
 const { systemPrompt } = require('../config/systemPrompt')
 
@@ -115,10 +116,7 @@ const buildChatMessages = (userPrompt, context, history) => {
         finalHistory = []
 
         if (finalContext === null) {
-            return {
-                ok: false,
-                error: 'El mensaje excede el límite máximo de tokens establecido. Debe reducir el mensaje o el contexto seleccionado.'
-            }
+            throw new AppError(400, 'El mensaje excede el límite máximo de tokens establecido. Debe reducir el mensaje o el contexto seleccionado.')
         }
     }
 

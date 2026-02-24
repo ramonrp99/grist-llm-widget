@@ -1,34 +1,27 @@
 const config = require('../config/env')
+const AppError = require('../utils/AppError')
 
 // Obtener listado de modelos disponibles en OpenRouter
 const getOpenRouterModels = async () => {
-    try {
-        const res = await fetch('https://openrouter.ai/api/v1/models', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${config.openRouterApiKey}`
-            }
-        })
-        const json = await res.json()
-
-        if(json.error) {
-            return {
-                ok: false,
-                error: json.error
-            }
+    const res = await fetch('https://openrouter.ai/api/v1/models', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${config.openRouterApiKey}`
         }
+    })
 
-        return {
-            ok: true,
-            data: json.data
-        }
-    } catch (err) {
-        console.error(`Error en llamada a /models en OpenRouter: ${err}`)
+    const json = await res.json()
 
-        return {
-            ok: false,
-            error: err
-        }
+    if(!res.ok || json.error) {
+        const message = json.error.message || 'Error al obtener los modelos de OpenRouter'
+        const statusCode = res.status || 500
+
+        throw new AppError(statusCode, message)
+    }
+
+    return {
+        ok: true,
+        data: json.data
     }
 }
 
@@ -44,37 +37,30 @@ const getAvailableModels = async () => {
 
 // Enviar prompt a modelo de OpenRouter
 const generateOpenRouterCompletion = async (model, messages) => {
-    try {
-        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${config.openRouterApiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'model': model,
-                'messages': messages
-            })
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${config.openRouterApiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            'model': model,
+            'messages': messages
         })
-        const json = await res.json()
+    })
 
-        if(json.error) {
-            return {
-                ok: false,
-                error: json.error
-            }
-        }
+    const json = await res.json()
 
-        return {
-            ok: true,
-            data: json.choices[0].message.content
-        }
-    } catch (err) {
-        console.error(`Error en llamada a OpenRouter: ${err}`)
-        return {
-            ok: false,
-            error: err
-        }
+    if(!res.ok || json.error) {
+        const message = json.error.message || 'Error al generar una respuesta con OpenRouter'
+        const statusCode = res.status || 500
+
+        throw new AppError(statusCode, message)
+    }
+
+    return {
+        ok: true,
+        data: json.choices[0].message.content
     }
 }
 
