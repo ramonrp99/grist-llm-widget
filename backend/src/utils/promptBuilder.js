@@ -1,7 +1,7 @@
 const config = require('../config/env')
 const { countTokens } = require('./tokenizer')
 const { splitTableIntoRows } = require('./markdown')
-const AppError = require('./AppError')
+const AppError = require('../core/AppError')
 
 const { systemPrompt } = require('../config/systemPrompt')
 

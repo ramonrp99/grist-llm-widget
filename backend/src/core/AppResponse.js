@@ -1,3 +1,5 @@
+const { success } = require("zod")
+
 class AppResponse {
     constructor(statusCode = 200, data = {}) {
         this.statusCode = statusCode
@@ -6,7 +8,7 @@ class AppResponse {
 
     send(res) {
         return res.status(this.statusCode).json({
-            ok: true,
+            success: true,
             data: this.data
         })
     }

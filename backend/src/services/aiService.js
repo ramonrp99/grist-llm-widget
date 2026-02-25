@@ -1,5 +1,5 @@
 const config = require('../config/env')
-const AppError = require('../utils/AppError')
+const AppError = require('../core/AppError')
 
 // Obtener listado de modelos disponibles en OpenRouter
 const getOpenRouterModels = async () => {

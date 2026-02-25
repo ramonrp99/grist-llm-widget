@@ -1,7 +1,7 @@
 const aiService = require('../services/aiService')
 const { buildChatMessages } = require('../utils/promptBuilder')
 const { extractTable } = require('../utils/markdown')
-const AppResponse = require('../utils/AppResponse')
+const AppResponse = require('../core/AppResponse')
 
 const { availableModels } = require('../config/models')
 

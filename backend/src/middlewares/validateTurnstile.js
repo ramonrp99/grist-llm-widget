@@ -1,5 +1,5 @@
 const config = require('../config/env')
-const AppError = require('../utils/AppError')
+const AppError = require('../core/AppError')
 
 const validateTurnstile = async (req, res, next) => {
     const token = req.headers['cf-turnstile-token']
