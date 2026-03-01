@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
 import { getModels } from "../services/aiService"
 import type { TModel } from "../types/TModel"
+import useGrist from "../hooks/useGrist"
+import { getMarkdownTable } from "../utils/markdown"
 
 interface MessageInputProps {
-    onSend: (text: string) => void
+    onSend: (message: string, context: string, model: string) => void
 }
 
 export default function MessageInput({onSend}: Readonly<MessageInputProps>) {
@@ -18,7 +20,7 @@ export default function MessageInput({onSend}: Readonly<MessageInputProps>) {
         const context: string = formData.get('context') as string
         const model: string = formData.get('model') as string
 
-        onSend(`${message} | ${context} | ${model}`)
+        onSend(message, context, model)
     }
 
     return (

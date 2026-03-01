@@ -4,26 +4,14 @@ import type { TMessage } from "../types/TMessage"
 export default function useChat() {
     const [messages, setMessages] = useState<TMessage[]>([])
 
-    const addMessage = (text: string) => {
+    const addMessage = (message: string, isUser: boolean) => {
         const msg: TMessage = {
             id: crypto.randomUUID(),
-            text: text,
-            isUser: true
+            text: message,
+            isUser: isUser
         }
 
         setMessages(prev => [...prev, msg])
-
-        // PROVISIONAL
-        // Respuesta LLM
-        setTimeout(() => {
-            const aiMsg: TMessage = {
-                id: crypto.randomUUID(),
-                text: 'Respuesta provisional',
-                isUser: false
-            }
-
-            setMessages(prev => [...prev, aiMsg])
-        }, 1000)
     }
 
     return {messages, addMessage}
