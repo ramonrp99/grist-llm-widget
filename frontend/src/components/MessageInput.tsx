@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react"
 import { getModels } from "../services/aiService"
 import type { TModel } from "../types/TModel"
-import useGrist from "../hooks/useGrist"
-import { getMarkdownTable } from "../utils/markdown"
 
 interface MessageInputProps {
     onSend: (message: string, context: string, model: string) => void
@@ -15,7 +13,7 @@ export default function MessageInput({onSend}: Readonly<MessageInputProps>) {
         getModels().then(models => setModels(models))
     }, [])
 
-    const sendMessage = (formData: FormData) => {
+    function sendMessage(formData: FormData) {
         const message: string = formData.get('message') as string
         const context: string = formData.get('context') as string
         const model: string = formData.get('model') as string
