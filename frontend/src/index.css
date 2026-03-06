@@ -6,7 +6,9 @@
   --color-primary-hover: #009058;
   --color-secondary: #FFFFFF;
   --color-message: #DCF4EB;
-  --color-message-hover: #e6f0ec;
+  --color-message-hover: #E6F0EC;
+  --color-table-header: #C1C1C1;
+  --color-table-cell: #F8F8F8;
 
   --font-lato: "Lato", sans-serif;
 }

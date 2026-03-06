@@ -4,10 +4,11 @@ import type { TMessage } from "../types/TMessage"
 export default function useChat() {
     const [messages, setMessages] = useState<TMessage[]>([])
 
-    const addMessage = (message: string, isUser: boolean) => {
+    const addMessage = (isUser: boolean, message: string, table?: string[][]) => {
         const msg: TMessage = {
             id: crypto.randomUUID(),
             text: message,
+            table: table,
             isUser: isUser
         }
 

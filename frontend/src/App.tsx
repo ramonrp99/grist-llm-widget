@@ -5,17 +5,17 @@ import useChat from './hooks/useChat';
 import useGrist from './hooks/useGrist';
 import { generateCompletion } from './services/aiService';
 import type { TGristRow } from './types/TGrist';
-import { getMarkdownTable } from './utils/markdown';
+import { getMarkdownTable, extractTableData } from './utils/markdown';
 
 export default function App() {
     const {messages, addMessage} = useChat()
     const {isReady, row, table} = useGrist()
 
     function sendMessage(message: string, context: string, model: string): void {
-        addMessage(message, true)
+        addMessage(true, message)
 
         if(!isReady) {
-            addMessage('Ha ocurrido un error inesperado.', false)
+            addMessage(false, 'Ha ocurrido un error inesperado.')
             return
         }
 
@@ -32,7 +32,9 @@ export default function App() {
         const mdTable = getMarkdownTable(gristData)
 
         generateCompletion(message, mdTable, model).then((data) => {
-            addMessage(data.text, false)
+            const table = data.table ? extractTableData(data.table) : undefined
+
+            addMessage(false, data.text, table)
         })
     }
 
