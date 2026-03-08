@@ -18,7 +18,7 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
     }, [data])
 
     return (
-        <div className="overflow-x-auto">
+        <div className="max-w-full overflow-x-auto">
             <table className="border-collapse table-auto">
                 <thead>
                     <tr>
