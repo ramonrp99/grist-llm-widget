@@ -2,10 +2,11 @@ import type { TMessage } from "../types/TMessage"
 import ChatTable from "./ChatTable"
 
 interface ChatMessageProps {
-    message: TMessage
+    message: TMessage,
+    onSaveTable: (data: string[][]) => void
 }
 
-export default function ChatMessage({message}: Readonly<ChatMessageProps>) {
+export default function ChatMessage({message, onSaveTable}: Readonly<ChatMessageProps>) {
     if(message.isUser) {
         return (
             <div className="rounded-lg rounded-tr-none max-w-[70%] ml-auto px-4 py-2 bg-message shadow-xs">
@@ -17,7 +18,7 @@ export default function ChatMessage({message}: Readonly<ChatMessageProps>) {
             <div className="flex flex-col gap-4 items-start">
                 <p className="text-left wrap-break-word">{message.text}</p>
                 {message.table && (
-                    <ChatTable data={message.table}/>
+                    <ChatTable data={message.table} onSave={onSaveTable}/>
                 )}
             </div>
         )
