@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
+import useGrist from "../hooks/useGrist"
 
 interface ChatTableProps {
-    data: string[][],
-    onSave: (data: string[][]) => void
+    data: string[][]
 }
 
 interface RowData {
@@ -10,7 +10,9 @@ interface RowData {
     cells: string[]
 }
 
-export default function ChatTable({data, onSave}: Readonly<ChatTableProps>) {
+export default function ChatTable({data}: Readonly<ChatTableProps>) {
+    const {updateRow, addRow} = useGrist()
+
     const {header, rows} = useMemo(() => {
         const [header, ...rows] = data
 
@@ -22,6 +24,10 @@ export default function ChatTable({data, onSave}: Readonly<ChatTableProps>) {
             }))
         }
     }, [data])
+
+    const idColumnIndex = useMemo(() => {
+        return header.indexOf('id')
+    }, [header])
 
     const [isEditing, setIsEditing] = useState(false)
     const [editableRows, setEditableRows] = useState<RowData[]>(rows)
@@ -50,9 +56,21 @@ export default function ChatTable({data, onSave}: Readonly<ChatTableProps>) {
     }
 
     function handleSaveClick() {
-        const finalData = [header, ...editableRows.map(row => row.cells)]
+        const headers = header.filter((_, index) => index !== idColumnIndex)
+        const finalData = [...editableRows.map(row => row.cells)]
 
-        onSave(finalData)
+        finalData.forEach(row => {
+            const rowId = row[idColumnIndex]
+            const rowData = row.filter((_, index) => index !== idColumnIndex)
+            const rowJson = Object.fromEntries(headers.map((h, i) => [h, rowData[i]]))
+
+            if(rowId === '') {
+                addRow(rowJson)
+            } else {
+                updateRow(Number(rowId), rowJson)
+            }
+        })
+
         setIsEditing(false)
     }
 
@@ -62,7 +80,7 @@ export default function ChatTable({data, onSave}: Readonly<ChatTableProps>) {
                 <table className="border-collapse table-auto">
                     <thead>
                         <tr>
-                            {header.map((h, i) => (
+                            {header.map((h, i) => i === idColumnIndex ? null : (
                                 <th 
                                     key={`header-${h}-${i}`}
                                     className="border px-3 py-2 whitespace-nowrap bg-table-header"
@@ -75,7 +93,7 @@ export default function ChatTable({data, onSave}: Readonly<ChatTableProps>) {
                     <tbody>
                         {editableRows.map(row => (
                             <tr key={row.id}>
-                                {row.cells.map((cell, iCell) => (
+                                {row.cells.map((cell, iCell) => iCell === idColumnIndex ? null : (
                                     <td 
                                         key={`${row.id}-cell-${iCell}`}
                                         data-value={cell}

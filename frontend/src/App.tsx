@@ -46,14 +46,10 @@ export default function App() {
         })
     }
 
-    function saveData(data: string[][]) {
-        console.log('datos tabla a guardar', data)
-    }
-
     return (
         <div className='flex flex-col h-full'>
             <section className='flex-1 overflow-y-auto pb-4 mask-b-from-[calc(100%-1rem)] mask-b-to-100%'>
-                <ChatList messages={messages} onSaveTable={saveData}/>
+                <ChatList messages={messages}/>
             </section>
             <section className='p-2 border-2 border-neutral-200 rounded-xl shadow-md'>
                 <MessageInput disabled={isGenerating} onSend={(message, context, model) => sendMessage(message, context, model)}/>
