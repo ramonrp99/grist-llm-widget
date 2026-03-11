@@ -30,9 +30,8 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
     }, [header])
 
     const [isEditing, setIsEditing] = useState(false)
-    const [editableRows, setEditableRows] = useState<RowData[]>(rows)
     const [isSaved, setIsSaved] = useState(false)
-    const [savedRows, setSavedRows] = useState<RowData[]>(rows)
+    const [editableRows, setEditableRows] = useState<RowData[]>(rows)
 
     useEffect(() => {
         setEditableRows(rows)
@@ -62,7 +61,7 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
     }
 
     const handleCancelClick = () => {
-        setEditableRows(savedRows)
+        setEditableRows(rows)
         setIsEditing(false)
     }
 
@@ -82,7 +81,6 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
             }
         })
 
-        setSavedRows(editableRows)
         setIsEditing(false)
         setIsSaved(true)
     }
