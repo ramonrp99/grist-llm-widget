@@ -29,6 +29,10 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
         return header.indexOf('id')
     }, [header])
 
+    const showIdColumn = useMemo(() => {
+        return rows.some(row => row.cells[idColumnIndex] && row.cells[idColumnIndex] !== '')
+    }, [rows, idColumnIndex])
+
     const [isEditing, setIsEditing] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
     const [editableRows, setEditableRows] = useState<RowData[]>(rows)
@@ -91,12 +95,12 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
                 <table className="border-collapse table-auto">
                     <thead>
                         <tr>
-                            {header.map((h, i) => i === idColumnIndex ? null : (
+                            {header.map((h, i) => i === idColumnIndex && !showIdColumn ? null : (
                                 <th 
                                     key={`header-${h}-${i}`}
-                                    className="border px-3 py-2 whitespace-nowrap bg-table-header"
+                                    className={`px-3 py-2 ${i === idColumnIndex ? '' : 'border whitespace-nowrap bg-table-header'}`}
                                 >
-                                    {h}
+                                    {i === idColumnIndex ? null : h}
                                 </th>
                             ))}
                         </tr>
@@ -104,19 +108,27 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
                     <tbody>
                         {editableRows.map(row => (
                             <tr key={row.id}>
-                                {row.cells.map((cell, iCell) => iCell === idColumnIndex ? null : (
+                                {row.cells.map((cell, iCell) => iCell === idColumnIndex && !showIdColumn ? null : (
                                     <td 
                                         key={`${row.id}-cell-${iCell}`}
                                         data-value={cell}
-                                        className="relative border bg-table-cell min-h-1 after:content-[attr(data-value)] after:invisible after:whitespace-nowrap after:block after:px-3 after:py-2"
+                                        className={`relative border min-h-1 ${iCell === idColumnIndex ? 'bg-table-column-id' : 'bg-table-cell'} after:content-[attr(data-value)] after:invisible after:whitespace-nowrap after:block after:px-3 after:py-2`}
                                     >
-                                        <input
-                                            type="text"
-                                            value={cell}
-                                            onChange={(e) => handleCellChange(row.id, iCell, e.target.value)}
-                                            disabled={!isEditing}
-                                            className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] min-w-0 px-2 py-1 bg-transparent outline-none border-none enabled:ring-2 enabled:ring-inset enabled:ring-primary"
-                                        />
+                                        {iCell === idColumnIndex ? (
+                                            <span
+                                                className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] min-w-0 px-2 py-1 bg-transparent"
+                                            >
+                                                {cell}
+                                            </span>
+                                        ): (
+                                            <input
+                                                type="text"
+                                                value={cell}
+                                                onChange={(e) => handleCellChange(row.id, iCell, e.target.value)}
+                                                disabled={!isEditing}
+                                                className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] min-w-0 px-2 py-1 bg-transparent outline-none border-none enabled:ring-2 enabled:ring-inset enabled:ring-primary"
+                                            />
+                                        )}
                                     </td>
                                 ))}
                             </tr>
