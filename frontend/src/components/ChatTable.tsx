@@ -31,6 +31,7 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
 
     const [isEditing, setIsEditing] = useState(false)
     const [editableRows, setEditableRows] = useState<RowData[]>(rows)
+    const [isSaved, setIsSaved] = useState(false)
     const [savedRows, setSavedRows] = useState<RowData[]>(rows)
 
     useEffect(() => {
@@ -83,6 +84,7 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
 
         setSavedRows(editableRows)
         setIsEditing(false)
+        setIsSaved(true)
     }
 
     return (
@@ -125,27 +127,36 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
                 </table>
             </div>
             <div className="flex flex-row gap-2 justify-end">
-                {isEditing ? (
-                    <button
-                        onClick={handleCancelClick}
-                        className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-red-500 border-red-500 font-semibold hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-red-100"
+                {isSaved ? (
+                    <p
+                        className="flex flex-row gap-0.5 text-primary font-semibold"
                     >
-                        Cancelar
-                    </button>
-                ) : (
+                        <span className="material-symbols-outlined">check</span>
+                        <span>Guardado</span>
+                    </p>
+                ) : (<>
+                    {isEditing ? (
+                        <button
+                            onClick={handleCancelClick}
+                            className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-red-500 border-red-500 font-semibold hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-red-100"
+                        >
+                            Cancelar
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleEditClick}
+                            className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-primary border-primary font-semibold hover:bg-message-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-message-hover"
+                        >
+                            Editar
+                        </button>
+                    )}
                     <button
-                        onClick={handleEditClick}
-                        className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-primary border-primary font-semibold hover:bg-message-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-message-hover"
+                        onClick={handleSaveClick}
+                        className="px-2 py-1 rounded-md cursor-pointer bg-primary text-secondary font-semibold hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover"
                     >
-                        Editar
+                        Guardar
                     </button>
-                )}
-                <button
-                    onClick={handleSaveClick}
-                    className="px-2 py-1 rounded-md cursor-pointer bg-primary text-secondary font-semibold hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover"
-                >
-                    Guardar
-                </button>
+                </>)}
             </div>
         </div>
     )
