@@ -49,8 +49,8 @@ const getTruncatedContext = (context, availableTokens) => {
         const row = rowsTokens[i]
 
         if (currentTokens + row.tokens <= availableTokens) {
-            currentContext += `\n${row[i].content}`
-            currentTokens += row[i].tokens
+            currentContext += `\n${row.content}`
+            currentTokens += row.tokens
         } else {
             break
         }

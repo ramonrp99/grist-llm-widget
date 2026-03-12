@@ -7,7 +7,7 @@ export function getMarkdownTable(table: TGristRow[]): string {
         return ''
     }
 
-    const header = Object.keys(table[0]).filter(k => k !== 'id')
+    const header = Object.keys(table[0])
     const rows = table.map(row => header.map(h => String(row[h] ?? '')))
 
     return markdownTable([header, ...rows])
