@@ -12,15 +12,22 @@ export default function ChatMessage({message}: Readonly<ChatMessageProps>) {
                 <p className="text-left wrap-break-word">{message.text}</p>
             </div>
         )
-    } else {
-        return (
-            <div className="flex flex-col gap-4 items-start">
-                <p className="text-left wrap-break-word">{message.text}</p>
-                {message.table && (
-                    <ChatTable data={message.table}/>
-                )}
-            </div>
-        )
-    }
+    } else if(message.error) {
+            return (
+                <div className="flex gap-2 text-red-500">
+                    <span className="material-symbols-outlined">error</span>
+                    <p className="text-left wrap-break-word">{message.text}</p>
+                </div>
+            )
+        } else {
+            return (
+                <div className="flex flex-col gap-4 items-start">
+                    <p className="text-left wrap-break-word">{message.text}</p>
+                    {message.table && (
+                        <ChatTable data={message.table}/>
+                    )}
+                </div>
+            )
+        }
     
 }
