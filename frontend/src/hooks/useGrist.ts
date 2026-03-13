@@ -17,7 +17,6 @@ export default function useGrist() {
         const grist = globalThis.grist
 
         if(!grist) {
-            console.error("Error con Grist Plugin API")
             return
         }
 
@@ -44,13 +43,11 @@ export default function useGrist() {
         const grist = gristRef.current
 
         if(!grist) {
-            console.error("Error con Grist Plugin API")
-            return
+            throw new Error('Error con Grist Plugin API')
         }
 
         if(!tableId) {
-            console.error('Grist TableId no disponible')
-            return
+            throw new Error('Grist TableId no disponible')
         }
 
         try {
@@ -58,17 +55,18 @@ export default function useGrist() {
                 [action, tableId, rowId, data]
             ])
         } catch(err) {
-            console.error(`Error realizando la acción ${action}:`, err)
-            throw err
+            const errorMessage = err instanceof Error ? err.message : 'Error desconocido'
+
+            throw new Error(errorMessage)
         }
     }, [tableId])
 
     const updateRow = (rowId: number, data: Record<string, string>) => {
-        sendAction('UpdateRecord', rowId, data)
+        return sendAction('UpdateRecord', rowId, data)
     }
 
     const addRow = (data: Record<string, string>) => {
-        sendAction('AddRecord', null, data)
+        return sendAction('AddRecord', null, data)
     }
 
     return {isReady, row, table, updateRow, addRow}

@@ -1,13 +1,17 @@
-export function getModels() {
-    return fetch('http://localhost:3000/api/ai/models')
-        .then(res => res.json())
-        .then(response => {
-            return response.data
-        })
+export async function getModels() {
+    const res = await fetch('http://localhost:3000/api/ai/models')
+
+    const json = await res.json()
+
+    if(!res.ok || json.error) {
+        throw new Error('Se ha producido un error al obtener los modelos disponibles.')
+    }
+
+    return json.data
 }
 
-export function generateCompletion(message: string, context: string, model: string) {
-    return fetch('http://localhost:3000/api/ai/chat', {
+export async function generateCompletion(message: string, context: string, model: string) {
+    const res = await fetch('http://localhost:3000/api/ai/chat', {
         method: 'POST',
         headers: {
             'CF-TURNSTILE-TOKEN': import.meta.env.VITE_CF_TURNSTILE_TOKEN,
@@ -20,8 +24,16 @@ export function generateCompletion(message: string, context: string, model: stri
             'messages': []
         })
     })
-        .then(res => res.json())
-        .then(response => {
-            return response.data
-        })
+
+    const json = await res.json()
+
+    if(!res.ok || json.error) {
+        if(res.status === 429) {
+            throw new Error('Se ha alcanzado el límite de peticiones. Inténtalo de nuevo más tarde.')
+        }
+
+        throw new Error('Se ha producido un error inesperado. Por favor, inténtalo de nuevo.')
+    }
+
+    return json.data
 }

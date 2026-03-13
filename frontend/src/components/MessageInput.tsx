@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type SyntheticEvent } from "react"
 import { getModels } from "../services/aiService"
 import type { TModel } from "../types/TModel"
+import AppAlert from "./core/AppAlert"
 
 interface MessageInputProps {
     disabled: boolean,
@@ -9,14 +10,33 @@ interface MessageInputProps {
 
 export default function MessageInput({disabled, onSend}: Readonly<MessageInputProps>) {
     const [models, setModels] = useState<TModel[]>([])
+    const [error, setError] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
 
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
-        getModels().then(models => setModels(models))
+        const loadModels = async () => {
+            try {
+                const models = await getModels()
+
+                if(models.length === 0) {
+                    throw new Error('No se han encontrado modelos disponibles. Por favor, ponte en contacto con el administrador.')
+                }
+
+                setModels(models)
+            } catch(err) {
+                const errMessage = err instanceof Error ? err.message : 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.'
+                
+                setError(true)
+                setErrorMsg(errMessage)
+            }
+        }
+
+        loadModels()
     }, [])
 
-    function sendMessage(e: SyntheticEvent<HTMLFormElement>) {
+    const sendMessage = (e: SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         const formData = new FormData(e.currentTarget)
@@ -31,10 +51,18 @@ export default function MessageInput({disabled, onSend}: Readonly<MessageInputPr
         }
     }
 
+    const handleAlertClose = () => {
+        setError(false)
+        setErrorMsg('')
+    }
+
     return (
         <form
             onSubmit={sendMessage}
         >
+            {error ? (
+                <AppAlert message={errorMsg} onClose={handleAlertClose}/>
+            ): null}
             <fieldset
                 className="flex flex-col gap-2 min-w-0 w-full"
                 disabled={disabled}

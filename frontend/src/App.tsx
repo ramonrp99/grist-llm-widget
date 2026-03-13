@@ -14,36 +14,40 @@ export default function App() {
     const {messages, addMessage} = useChat()
     const {isReady, row, table} = useGrist()
 
-    function sendMessage(message: string, context: string, model: string): void {
-        setIsGenerating(true)
+    const sendMessage = async (message: string, context: string, model: string) => {
+        try {
+            addMessage(true, message)
+            setIsGenerating(true)
 
-        addMessage(true, message)
-
-        if(!isReady) {
-            addMessage(false, 'Ha ocurrido un error inesperado.')
-            setIsGenerating(false)
-            return
-        }
-
-        let gristData: TGristRow[] = []
-
-        if(context === 'row') {
-            if(row) {
-                gristData = [row]
+            if(!isReady) {
+                addMessage(false, 'Ha ocurrido un error inesperado.')
+                setIsGenerating(false)
+                return
             }
-        } else {
-            gristData = table
-        }
 
-        const mdTable = getMarkdownTable(gristData)
+            let gristData: TGristRow[] = []
 
-        generateCompletion(message, mdTable, model).then((data) => {
-            const table = data.table ? extractTableData(data.table) : undefined
+            if(context === 'row') {
+                if(row) {
+                    gristData = [row]
+                }
+            } else {
+                gristData = table
+            }
 
-            addMessage(false, data.text, table)
+            const mdTable = getMarkdownTable(gristData)
 
+            const data = await generateCompletion(message, mdTable, model)
+            const dataTable = data.table ? extractTableData(data.table) : undefined
+
+            addMessage(false, data.text, dataTable)
             setIsGenerating(false)
-        })
+        } catch(err) {
+            const errMessage = err instanceof Error ? err.message : 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.'
+
+            addMessage(false, errMessage, undefined, true)
+            setIsGenerating(false)
+        }
     }
 
     return (

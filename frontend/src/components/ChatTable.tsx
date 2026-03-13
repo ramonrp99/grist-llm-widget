@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import useGrist from "../hooks/useGrist"
+import AppAlert from "./core/AppAlert"
 
 interface ChatTableProps {
     data: string[][]
@@ -12,6 +13,7 @@ interface RowData {
 
 export default function ChatTable({data}: Readonly<ChatTableProps>) {
     const {updateRow, addRow} = useGrist()
+    const [error, setError] = useState(false)
 
     const {header, rows} = useMemo(() => {
         const [header, ...rows] = data
@@ -69,28 +71,41 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
         setIsEditing(false)
     }
 
-    const handleSaveClick = () => {
-        const headers = header.filter((_, index) => index !== idColumnIndex)
-        const finalData = [...editableRows.map(row => row.cells)]
+    const handleSaveClick = async () => {
+        try {
+            const headers = header.filter((_, index) => index !== idColumnIndex)
+            const finalData = [...editableRows.map(row => row.cells)]
 
-        finalData.forEach(row => {
-            const rowId = row[idColumnIndex]
-            const rowData = row.filter((_, index) => index !== idColumnIndex)
-            const rowJson = Object.fromEntries(headers.map((h, i) => [h, rowData[i]]))
+            for(const row of finalData) {
+                const rowId = row[idColumnIndex]
+                const rowData = row.filter((_, index) => index !== idColumnIndex)
+                const rowJson = Object.fromEntries(headers.map((h, i) => [h, rowData[i]]))
 
-            if(rowId === '') {
-                addRow(rowJson)
-            } else {
-                updateRow(Number(rowId), rowJson)
+                if(rowId === '') {
+                    await addRow(rowJson)
+                } else {
+                    await updateRow(Number(rowId), rowJson)
+                }
             }
-        })
 
-        setIsEditing(false)
-        setIsSaved(true)
+            setIsEditing(false)
+            setIsSaved(true)
+        } catch(err) {
+            setError(true)
+            console.error('Error al guardar los datos en Grist:', err)
+        }
+    }
+
+    const handleAlertClose = () => {
+        setError(false)
     }
 
     return (
         <div className="flex flex-col gap-2 max-w-full">
+            {error ? (
+                <AppAlert message="Ha ocurrido un error al guardar los datos en Grist. Por favor, inténtalo de nuevo." onClose={handleAlertClose}/>
+            ) : null}
+
             <div className="overflow-x-auto">
                 <table className="border-collapse table-auto">
                     <thead>
