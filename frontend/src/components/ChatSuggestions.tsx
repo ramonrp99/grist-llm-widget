@@ -1,13 +1,14 @@
 import type { EmblaCarouselType } from "embla-carousel"
 import useEmblaCarousel from "embla-carousel-react"
 import { useCallback, useEffect, useState, type SyntheticEvent } from "react"
+import type { TSuggestion } from "../types/TSuggestion"
 
 interface ChatSuggestionsProps {
-    options: string[],
+    suggestions: TSuggestion[],
     onSelect: (value: string) => void
 }
 
-export default function ChatSuggestions({options, onSelect}: Readonly<ChatSuggestionsProps>) {
+export default function ChatSuggestions({suggestions, onSelect}: Readonly<ChatSuggestionsProps>) {
     const [emblaRef, emblaApi] = useEmblaCarousel({
         align: 'start',
         dragFree: true,
@@ -63,7 +64,7 @@ export default function ChatSuggestions({options, onSelect}: Readonly<ChatSugges
         onSelect(selectedOption)
     }
 
-    if(!options || options.length === 0) return null
+    if(!suggestions || suggestions.length === 0) return null
 
     return (
         <div className="embla relative w-full">
@@ -77,14 +78,14 @@ export default function ChatSuggestions({options, onSelect}: Readonly<ChatSugges
 
             <div className="embla__viewport overflow-x-hidden" ref={emblaRef}>
                 <div className="embla__container flex items-center justify-center-safe gap-2">
-                    {options.map(option => (
+                    {suggestions.map(suggestion => (
                         <button
-                            key={option}
-                            data-option={option}
+                            key={suggestion.id}
+                            data-option={suggestion.id}
                             onClick={handleOptionClick}
                             className="embla__slide flex-none bg-primary text-secondary rounded-full font-semibold cursor-pointer px-4 py-2"
                         >
-                            {option}
+                            {suggestion.title}
                         </button>
                     ))}
                 </div>

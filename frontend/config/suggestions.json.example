@@ -1,0 +1,22 @@
+[
+    {
+        "title": "Análisis y resumen",
+        "prompt": "Realiza un análisis de los datos y genera un resumen que destaque los aspectos más relevantes, tendencias principales y cualquier dato significativo que se observe en el conjunto de datos.",
+        "context": "table"
+    },
+    {
+        "title": "Traducción",
+        "prompt": "Traduce todos los campos de texto al idioma inglés.",
+        "context": "row"
+    },
+    {
+        "title": "Generar datos de prueba",
+        "prompt": "Genera una nueva fila de datos de prueba que sigan la estructura, tipos de datos y lógica de la tabla.",
+        "context": "table"
+    },
+    {
+        "title": "Generar descripción",
+        "prompt": "Genera una descripción técnica y detallada de los datos enviados.",
+        "context": "row"
+    }
+]
