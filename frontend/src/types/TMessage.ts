@@ -5,3 +5,8 @@ export interface TMessage {
     isUser: boolean,
     error: boolean
 }
+
+export interface THistoryMessage {
+    role: 'user' | 'assistant',
+    content: string
+}

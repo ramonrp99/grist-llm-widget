@@ -16,5 +16,21 @@ export default function useChat() {
         setMessages(prev => [...prev, msg])
     }
 
-    return {messages, addMessage}
+    const updateLastMessage = (updates: Partial<TMessage>) => {
+        setMessages(prev => {
+            if(prev.length === 0) return prev
+
+            const lastIndex = prev.length - 1
+            const updatedMessages = [...prev]
+
+            updatedMessages[lastIndex] = {
+                ...updatedMessages[lastIndex],
+                ...updates
+            }
+
+            return updatedMessages
+        })
+    }
+
+    return {messages, addMessage, updateLastMessage}
 }

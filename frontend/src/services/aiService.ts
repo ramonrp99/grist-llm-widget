@@ -1,3 +1,5 @@
+import type { THistoryMessage } from "../types/TMessage"
+
 export async function getModels() {
     const res = await fetch('http://localhost:3000/api/ai/models')
 
@@ -10,7 +12,7 @@ export async function getModels() {
     return json.data
 }
 
-export async function generateCompletion(message: string, context: string, model: string) {
+export async function generateCompletion(message: string, context: string, model: string, history: THistoryMessage[]) {
     const res = await fetch('http://localhost:3000/api/ai/chat', {
         method: 'POST',
         headers: {
@@ -21,7 +23,7 @@ export async function generateCompletion(message: string, context: string, model
             'model': model,
             'prompt': message,
             'context': context,
-            'messages': []
+            'messages': history
         })
     })
 
