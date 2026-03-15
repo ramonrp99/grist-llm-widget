@@ -1,7 +1,7 @@
 import type { THistoryMessage } from "../types/TMessage"
 
 export async function getModels() {
-    const res = await fetch(`${import.meta.env.API_URL}/api/ai/models`)
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/ai/models`)
 
     const json = await res.json()
 
@@ -13,10 +13,10 @@ export async function getModels() {
 }
 
 export async function generateCompletion(message: string, context: string, model: string, history: THistoryMessage[]) {
-    const res = await fetch(`${import.meta.env.API_URL}/api/ai/chat`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/ai/chat`, {
         method: 'POST',
         headers: {
-            'CF-TURNSTILE-TOKEN': import.meta.env.CF_TURNSTILE_TOKEN,
+            'CF-TURNSTILE-TOKEN': import.meta.env.VITE_CF_TURNSTILE_TOKEN,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
