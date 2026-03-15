@@ -1,19 +1,28 @@
-import { useEffect, useRef, useState, type SyntheticEvent } from "react"
+import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from "react"
 import { getModels } from "../services/aiService"
 import type { TModel } from "../types/TModel"
 import AppAlert from "./core/AppAlert"
+import type { TForm } from "../types/TForm"
 
 interface MessageInputProps {
     disabled: boolean,
+    initialData?: TForm,
     onSend: (message: string, context: string, model: string) => void
 }
 
-export default function MessageInput({disabled, onSend}: Readonly<MessageInputProps>) {
+export default function MessageInput({disabled, initialData, onSend}: Readonly<MessageInputProps>) {
+    const [message, setMessage] = useState('')
+    const [context, setContext] = useState('')
     const [models, setModels] = useState<TModel[]>([])
     const [error, setError] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
 
-    const inputRef = useRef<HTMLInputElement>(null)
+    useEffect(() => {
+        if(initialData) {
+            setMessage(initialData.prompt)
+            setContext(initialData.context)
+        }
+    }, [initialData])
 
     useEffect(() => {
         const loadModels = async () => {
@@ -36,19 +45,23 @@ export default function MessageInput({disabled, onSend}: Readonly<MessageInputPr
         loadModels()
     }, [])
 
-    const sendMessage = (e: SyntheticEvent<HTMLFormElement>) => {
+    const handlePromptChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setMessage(e.target.value)
+    }
+
+    const handleContextChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        setContext(e.target.value)
+    }
+
+    const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         const formData = new FormData(e.currentTarget)
-        const message: string = formData.get('message') as string
-        const context: string = formData.get('context') as string
         const model: string = formData.get('model') as string
 
         onSend(message, context, model)
 
-        if(inputRef.current) {
-            inputRef.current.value = ''
-        }
+        setMessage('')
     }
 
     const handleAlertClose = () => {
@@ -58,7 +71,7 @@ export default function MessageInput({disabled, onSend}: Readonly<MessageInputPr
 
     return (
         <form
-            onSubmit={sendMessage}
+            onSubmit={handleSubmit}
         >
             {error ? (
                 <AppAlert message={errorMsg} onClose={handleAlertClose}/>
@@ -69,7 +82,6 @@ export default function MessageInput({disabled, onSend}: Readonly<MessageInputPr
             >
                 <div>
                     <input
-                        ref={inputRef}
                         type="text"
                         id="message"
                         name="message"
@@ -79,6 +91,8 @@ export default function MessageInput({disabled, onSend}: Readonly<MessageInputPr
                         required
                         pattern=".*\S+.*"
                         title="El campo no puede estar vacío o contener únicamente espacios en blanco"
+                        value={message}
+                        onChange={handlePromptChange}
                     />
                 </div>
                 <div className="flex flex-row justify-between gap-2">
@@ -86,6 +100,8 @@ export default function MessageInput({disabled, onSend}: Readonly<MessageInputPr
                         <select 
                             name="context"
                             id="context"
+                            value={context}
+                            onChange={handleContextChange}
                             className="field-sizing-content h-8 p-1 border-2 rounded-full cursor-pointer bg-secondary text-primary border-primary font-semibold hover:bg-message-hover focus:outline-none focus:bg-message-hover disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                         >
                             <option value="row">Fila seleccionada</option>
