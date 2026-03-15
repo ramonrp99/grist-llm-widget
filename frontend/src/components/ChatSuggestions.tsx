@@ -83,7 +83,7 @@ export default function ChatSuggestions({suggestions, onSelect}: Readonly<ChatSu
                             key={suggestion.id}
                             data-option={suggestion.id}
                             onClick={handleOptionClick}
-                            className="embla__slide flex-none bg-primary text-secondary rounded-full font-semibold cursor-pointer px-4 py-2"
+                            className="embla__slide flex-none bg-primary text-secondary rounded-full font-semibold cursor-pointer px-4 py-2 hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover"
                         >
                             {suggestion.title}
                         </button>
