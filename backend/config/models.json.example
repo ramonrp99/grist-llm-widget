@@ -1,0 +1,24 @@
+{
+    "external": [
+        {
+            "model": "openrouter/free",
+            "name": "Modelos Gratuitos OpenRouter",
+            "description": "Enrutador que selecciona modelos gratuitos de manera aleatoria entre los disponibles en OpenRouter."
+        },
+        {
+            "model": "google/gemini-2.5-flash-lite",
+            "name": "Gemini 2.5 Flash Lite",
+            "description": "Equilibrio perfecto entre velocidad y eficiencia, optimizado para respuestas rápidas y procesamiento ligero."
+        },
+        {
+            "model": "anthropic/claude-3-haiku",
+            "name": "Claude 3 Haiku",
+            "description": "El modelo más rápido de Anthropic, excelente para categorización de datos y respuestas instantáneas con tono humano."
+        },
+        {
+            "model": "meta-llama/llama-3-8b-instruct",
+            "name": "Llama 3 8B",
+            "description": "Modelo de código abierto potente y versátil, ideal para tareas generales con un rendimiento excepcional en su categoría."
+        }
+    ]
+}
