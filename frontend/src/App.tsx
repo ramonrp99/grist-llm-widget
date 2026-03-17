@@ -13,6 +13,7 @@ import type { TForm } from './types/TForm';
 import type { THistoryMessage } from './types/TMessage';
 import type { TModel } from './types/TModel';
 import AppAlert from './components/core/AppAlert';
+import { preparePrompt } from './utils/promptShaper';
 
 export default function App() {
     const [isGenerating, setIsGenerating] = useState(false)
@@ -76,7 +77,10 @@ export default function App() {
                 }]
             })
 
-            const data = await generateCompletion(message, mdTable, model, processedHistory)
+            const maxTokens = models.find(m => m.model === model)?.max_tokens || 0
+            const truncatedData = preparePrompt(message, mdTable, processedHistory, maxTokens)
+
+            const data = await generateCompletion(truncatedData.prompt, truncatedData.context, model, truncatedData.history)
             const dataTable = data.table ? extractTableData(data.table) : undefined
 
             addMessage(false, data.text, dataTable)

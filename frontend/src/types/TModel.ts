@@ -1,5 +1,7 @@
 export interface TModel {
     model: string,
     name: string,
-    description: string
+    description: string,
+    max_tokens: number,
+    type: string
 }
