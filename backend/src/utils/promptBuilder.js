@@ -2,7 +2,7 @@ const { countTokens } = require('./tokenizer')
 const { splitTableIntoRows } = require('./markdown')
 const AppError = require('../core/AppError')
 
-const { systemPrompt } = require('../config/systemPrompt')
+const { systemPrompt, systemPromptTokens } = require('../config/systemPrompt')
 
 // Devuelve el historial de mensajes truncado
 const getTruncatedHistory = (history, availableTokens) => {
@@ -65,7 +65,6 @@ const getTruncatedContext = (context, availableTokens) => {
 // - 2º. Reduce el contexto (mantiene mínimo las 3 primeras filas (cabecera, separador y fila nº 1))
 // Devuelve un error controlado si continua superando el límite tras la reducción máxima
 const buildChatMessages = (userPrompt, context, history, maxTokens) => {
-    const systemPromptTokens = countTokens(systemPrompt)
     const userPromptTokens = countTokens(userPrompt)
     
     const fullContextTokens = countTokens(context)

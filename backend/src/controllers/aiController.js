@@ -3,6 +3,7 @@ const config = require('../config/env')
 const { buildChatMessages } = require('../utils/promptBuilder')
 const { extractTable } = require('../utils/markdown')
 const AppResponse = require('../core/AppResponse')
+const { systemPromptTokens } = require('../config/systemPrompt')
 
 const { availableModels } = require('../config/models')
 
@@ -18,12 +19,14 @@ const getModels = async(req, res, next) => {
                                       const modelTokenLimit = m.top_provider?.context_length || m.context_length
                                       // Se divide el limite de token del modelo en 50% para la entrada y 50% para la salida
                                       const modelInputTokenLimit = Math.floor(modelTokenLimit / 2)
+                                      const tokenLimit = Math.min(config.ai.maxTokens, modelInputTokenLimit)
+                                      const maxTokens = Math.max(tokenLimit - systemPromptTokens, 0)
 
                                       return {
                                           model: m.id,
                                           name: availableModels.external.find(am => am.model === m.id)?.name || m.name,
                                           description: availableModels.external.find(am => am.model === m.id)?.description || m.description,
-                                          max_tokens: Math.min(config.ai.maxTokens, modelInputTokenLimit),
+                                          max_tokens: maxTokens,
                                           type: 'external'
                                       }
                                   })
