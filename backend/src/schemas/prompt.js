@@ -1,6 +1,6 @@
 const z = require('zod')
 const config = require('../config/env')
-const { isTable } = require('../utils/markdown')
+const { isTable, splitTableIntoRows } = require('../utils/markdown')
 const { availableModels } = require('../config/models')
 
 const messageSchema = z.object({
@@ -27,6 +27,9 @@ const promptSchema = z.object({
               .max(config.schemas.promptSchema.context.maxLength)
               .refine((val) => isTable(val), {
                   error: 'El formato del contexto no es válido. Debe ser una tabla Markdown.'
+              })
+              .refine((val) => splitTableIntoRows(val).length >= 3, {
+                  error: 'La tabla debe tener mínimo 3 filas.'
               }),
 
     messages: z.array(messageSchema)
