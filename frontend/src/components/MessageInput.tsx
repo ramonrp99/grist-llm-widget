@@ -10,8 +10,18 @@ interface MessageInputProps {
 }
 
 export default function MessageInput({models, disabled, initialData, onSend}: Readonly<MessageInputProps>) {
-    const [message, setMessage] = useState(initialData?.prompt ||'')
-    const [context, setContext] = useState(initialData?.context ||'')
+    const [message, setMessage] = useState(initialData?.prompt || '')
+    const [context, setContext] = useState(initialData?.context || '')
+
+    // Comprobar si initialData ha cambiado sin provocar el renderizado en cascada que provocaría el uso de useEffect en esta funcionalidad
+    const [prevInitialData, setPrevInitialData] = useState(initialData)
+
+    if(initialData !== prevInitialData) {
+        setPrevInitialData(initialData)
+
+        setMessage(initialData?.prompt || '')
+        setContext(initialData?.context || '')
+    }
 
     const handlePromptChange = (e: ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value)

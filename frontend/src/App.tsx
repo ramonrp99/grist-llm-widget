@@ -101,7 +101,6 @@ export default function App() {
 
         if(selectedSuggestion) {
             setInputValues({
-                id: crypto.randomUUID(),
                 prompt: selectedSuggestion.prompt,
                 context: selectedSuggestion.context
             })
@@ -127,7 +126,7 @@ export default function App() {
                 </section>
             )}
             <section className='p-2 border-2 border-neutral-200 rounded-xl shadow-md'>
-                <MessageInput key={inputValues?.id} models={models} disabled={isGenerating} initialData={inputValues} onSend={onSendMessage}/>
+                <MessageInput models={models} disabled={isGenerating} initialData={inputValues} onSend={onSendMessage}/>
             </section>
         </div>
     )
