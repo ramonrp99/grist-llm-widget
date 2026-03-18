@@ -1,6 +1,8 @@
 const config = require('../config/env')
 const AppError = require('../core/AppError')
 
+let cachedModels = null
+
 // Obtener listado de modelos disponibles en OpenRouter
 const getOpenRouterModels = async () => {
     const res = await fetch('https://openrouter.ai/api/v1/models', {
@@ -19,6 +21,8 @@ const getOpenRouterModels = async () => {
         throw new AppError(statusCode, message)
     }
 
+    cachedModels = json.data
+
     return json.data
 }
 
@@ -29,7 +33,17 @@ const getLocalModels = async () => {
 
 // Obtener listado de modelos disponibles
 const getAvailableModels = async () => {
-    return await getOpenRouterModels()
+    if(!cachedModels) {
+        return await getOpenRouterModels()
+    }
+
+    return cachedModels
+}
+
+const getModelById = async (modelId) => {
+    const models = await getAvailableModels()
+
+    return models.find(m => m.id === modelId)
 }
 
 // Enviar prompt a modelo de OpenRouter
@@ -68,4 +82,4 @@ const generateCompletion = async (model, messages) => {
     return await generateOpenRouterCompletion(model, messages)
 }
 
-module.exports = { getAvailableModels, generateCompletion }
+module.exports = { getAvailableModels, getModelById, generateCompletion }

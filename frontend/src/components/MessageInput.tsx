@@ -1,49 +1,27 @@
-import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from "react"
-import { getModels } from "../services/aiService"
+import { useState, type ChangeEvent, type SyntheticEvent } from "react"
 import type { TModel } from "../types/TModel"
-import AppAlert from "./core/AppAlert"
 import type { TForm } from "../types/TForm"
 
 interface MessageInputProps {
+    models: TModel[],
     disabled: boolean,
     initialData?: TForm,
     onSend: (message: string, context: string, model: string) => void
 }
 
-export default function MessageInput({disabled, initialData, onSend}: Readonly<MessageInputProps>) {
-    const [message, setMessage] = useState('')
-    const [context, setContext] = useState('')
-    const [models, setModels] = useState<TModel[]>([])
-    const [error, setError] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
+export default function MessageInput({models, disabled, initialData, onSend}: Readonly<MessageInputProps>) {
+    const [message, setMessage] = useState(initialData?.prompt || '')
+    const [context, setContext] = useState(initialData?.context || '')
 
-    useEffect(() => {
-        if(initialData) {
-            setMessage(initialData.prompt)
-            setContext(initialData.context)
-        }
-    }, [initialData])
+    // Comprobar si initialData ha cambiado sin provocar el renderizado en cascada que provocaría el uso de useEffect en esta funcionalidad
+    const [prevInitialData, setPrevInitialData] = useState(initialData)
 
-    useEffect(() => {
-        const loadModels = async () => {
-            try {
-                const models = await getModels()
+    if(initialData !== prevInitialData) {
+        setPrevInitialData(initialData)
 
-                if(models.length === 0) {
-                    throw new Error('No se han encontrado modelos disponibles. Por favor, ponte en contacto con el administrador.')
-                }
-
-                setModels(models)
-            } catch(err) {
-                const errMessage = err instanceof Error ? err.message : 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.'
-                
-                setError(true)
-                setErrorMsg(errMessage)
-            }
-        }
-
-        loadModels()
-    }, [])
+        setMessage(initialData?.prompt || '')
+        setContext(initialData?.context || '')
+    }
 
     const handlePromptChange = (e: ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value)
@@ -64,19 +42,11 @@ export default function MessageInput({disabled, initialData, onSend}: Readonly<M
         setMessage('')
     }
 
-    const handleAlertClose = () => {
-        setError(false)
-        setErrorMsg('')
-    }
-
     return (
         <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-2 min-w-0 w-full"
         >
-            {error ? (
-                <AppAlert message={errorMsg} onClose={handleAlertClose}/>
-            ): null}
             <div>
                 <input
                     type="text"

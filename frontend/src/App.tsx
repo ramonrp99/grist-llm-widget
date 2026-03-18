@@ -1,23 +1,50 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css'
 import ChatList from './components/ChatList'
 import MessageInput from './components/MessageInput'
 import useChat from './hooks/useChat';
 import useGrist from './hooks/useGrist';
-import { generateCompletion } from './services/aiService';
+import { getModels, generateCompletion } from './services/aiService';
 import type { TGristRow } from './types/TGrist';
 import { getMarkdownTable, extractTableData } from './utils/markdown';
 import ChatSuggestions from './components/ChatSuggestions';
 import { processedSuggestions } from './config/suggestions';
 import type { TForm } from './types/TForm';
 import type { THistoryMessage } from './types/TMessage';
+import type { TModel } from './types/TModel';
+import AppAlert from './components/core/AppAlert';
+import { preparePrompt } from './utils/promptShaper';
 
 export default function App() {
     const [isGenerating, setIsGenerating] = useState(false)
     const [inputValues, setInputValues] = useState<TForm | undefined>(undefined)
+    const [models, setModels] = useState<TModel[]>([])
+    const [error, setError] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
 
     const {messages, addMessage, updateLastMessage} = useChat()
     const {isReady, row, table} = useGrist()
+
+    useEffect(() => {
+        const loadModels = async () => {
+            try {
+                const models = await getModels()
+
+                if(models.length === 0) {
+                    throw new Error('No se han encontrado modelos disponibles. Por favor, ponte en contacto con el administrador.')
+                }
+
+                setModels(models)
+            } catch(err) {
+                const errMessage = err instanceof Error ? err.message : 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.'
+                
+                setError(true)
+                setErrorMsg(errMessage)
+            }
+        }
+
+        loadModels()
+    }, [])
 
     const onSendMessage = async (message: string, context: string, model: string) => {
         try {
@@ -50,7 +77,10 @@ export default function App() {
                 }]
             })
 
-            const data = await generateCompletion(message, mdTable, model, processedHistory)
+            const maxTokens = models.find(m => m.model === model)?.max_tokens || 0
+            const truncatedData = preparePrompt(message, mdTable, processedHistory, maxTokens)
+
+            const data = await generateCompletion(truncatedData.prompt, truncatedData.context, model, truncatedData.history)
             const dataTable = data.table ? extractTableData(data.table) : undefined
 
             addMessage(false, data.text, dataTable)
@@ -77,8 +107,16 @@ export default function App() {
         }
     }
 
+    const handleAlertClose = () => {
+        setError(false)
+        setErrorMsg('')
+    }
+
     return (
         <div className='flex flex-col h-full gap-2'>
+            {error ? (
+                <AppAlert message={errorMsg} onClose={handleAlertClose}/>
+            ): null}
             <section className='flex-1 overflow-y-auto pb-2 mask-b-from-[calc(100%-0.5rem)] mask-b-to-100%'>
                 <ChatList messages={messages}/>
             </section>
@@ -88,7 +126,7 @@ export default function App() {
                 </section>
             )}
             <section className='p-2 border-2 border-neutral-200 rounded-xl shadow-md'>
-                <MessageInput disabled={isGenerating} initialData={inputValues} onSend={onSendMessage}/>
+                <MessageInput models={models} disabled={isGenerating} initialData={inputValues} onSend={onSendMessage}/>
             </section>
         </div>
     )
