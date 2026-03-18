@@ -46,7 +46,7 @@ export default function App() {
         loadModels()
     }, [])
 
-    const onSendMessage = async (message: string, context: string, model: string) => {
+    const onSendMessage = async (message: string, context: string, model: string, turnstileToken: string) => {
         try {
             const history = messages
 
@@ -80,7 +80,7 @@ export default function App() {
             const maxTokens = models.find(m => m.model === model)?.max_tokens || 0
             const truncatedData = preparePrompt(message, mdTable, processedHistory, maxTokens)
 
-            const data = await generateCompletion(truncatedData.prompt, truncatedData.context, model, truncatedData.history)
+            const data = await generateCompletion(truncatedData.prompt, truncatedData.context, model, truncatedData.history, turnstileToken)
             const dataTable = data.table ? extractTableData(data.table) : undefined
 
             addMessage(false, data.text, dataTable)

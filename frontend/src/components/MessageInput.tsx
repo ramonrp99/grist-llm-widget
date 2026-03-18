@@ -1,17 +1,21 @@
-import { useState, type ChangeEvent, type SyntheticEvent } from "react"
+import { useRef, useState, type ChangeEvent, type SyntheticEvent } from "react"
 import type { TModel } from "../types/TModel"
 import type { TForm } from "../types/TForm"
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile"
 
 interface MessageInputProps {
     models: TModel[],
     disabled: boolean,
     initialData?: TForm,
-    onSend: (message: string, context: string, model: string) => void
+    onSend: (message: string, context: string, model: string, turnstileToken: string) => void
 }
 
 export default function MessageInput({models, disabled, initialData, onSend}: Readonly<MessageInputProps>) {
     const [message, setMessage] = useState(initialData?.prompt || '')
     const [context, setContext] = useState(initialData?.context || '')
+
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+    const turnstileRef = useRef<TurnstileInstance>(null)
 
     // Comprobar si initialData ha cambiado sin provocar el renderizado en cascada que provocaría el uso de useEffect en esta funcionalidad
     const [prevInitialData, setPrevInitialData] = useState(initialData)
@@ -37,9 +41,17 @@ export default function MessageInput({models, disabled, initialData, onSend}: Re
         const formData = new FormData(e.currentTarget)
         const model: string = formData.get('model') as string
 
-        onSend(message, context, model)
+        if(turnstileToken) {
+            onSend(message, context, model, turnstileToken)
 
-        setMessage('')
+            setMessage('')
+            setTurnstileToken(null)
+            turnstileRef.current?.reset()
+        }
+    }
+
+    const handleTurnstileSuccess = (token: string) => {
+        setTurnstileToken(token)
     }
 
     return (
@@ -87,13 +99,14 @@ export default function MessageInput({models, disabled, initialData, onSend}: Re
                     </select>
                     <button
                         type="submit"
-                        disabled={disabled}
+                        disabled={disabled || !turnstileToken}
                         className="flex h-8 p-1 rounded-full cursor-pointer bg-primary text-secondary hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                     >
                         <span className="material-symbols-outlined">send</span>
                     </button>
                 </div>
             </div>
+            <Turnstile ref={turnstileRef} siteKey={import.meta.env.VITE_CF_TURNSTILE_SITE_KEY} onSuccess={handleTurnstileSuccess}/>
         </form>
     )
 }
