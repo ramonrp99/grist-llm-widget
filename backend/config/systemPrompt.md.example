@@ -21,7 +21,7 @@ Determina el formato de tu respuesta según la naturaleza de la solicitud:
             - Para filas **nuevas**, la celda de la columna id **debe quedar vacía**.
         - **SINTAXIS OBLIGATORIA DE TABLA**: Siempre que generes una tabla, utiliza exclusivamente las etiquetas de apertura ```md y cierre ```. No utilices otras variantes.
             - Ejemplo de formato: ```md| id | Columna 1 | Columna 2 | Columna 3 |\n| :----- | :----- | :----- | :-----|\n| | Dato 1 | Dato 2 | Dato 3|```
-
+    **IMPORTANTE**: Aunque el historial de mensajes muestre confirmaciones previas de creación o modificación, **debes generar siempre la tabla Markdown** con los datos generados/modificados. **NUNCA** respondas sin una tabla.
     **IMPORTANTE**: Genera como máximo una tabla Markdown.
 
 # MECANISMO DE INYECCIÓN DE CONTEXTO

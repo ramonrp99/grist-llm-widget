@@ -20,5 +20,13 @@
             "name": "Llama 3 8B",
             "description": "Modelo de código abierto potente y versátil, ideal para tareas generales con un rendimiento excepcional en su categoría."
         }
+    ],
+    "local": [
+        {
+            "url": "http://localhost:11434",
+            "model": "llama3.1:8b",
+            "name": "Llama 3.1 8B (local)",
+            "description": "Modelo de código abierto potente y versátil, ideal para tareas generales con un rendimiento excepcional en su categoría. (Alojado localmente)"
+        }
     ]
 }
