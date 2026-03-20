@@ -57,7 +57,8 @@ const generateOllamaCompletion = async (url, model, messages) => {
         },
         body: JSON.stringify({
             'model': model,
-            'messages': messages
+            'messages': messages,
+            'stream': false
         })
     })
 
