@@ -22,6 +22,22 @@ const getOpenRouterModels = async () => {
     return json.data
 }
 
+// Obtener listado de modelos disponibles en una url de Ollama
+const getOllamaModels = async (url) => {
+    const res = await fetch(`${url}/api/tags`)
+
+    const json = await res.json()
+
+    if(!res.ok || json.error) {
+        const message = json.error.message || `Error al obtener los modelos de Ollama`
+        const statusCode = res.status || 500
+
+        throw new AppError(statusCode, message)
+    }
+
+    return json.models
+}
+
 // Enviar prompt a modelo de OpenRouter
 const generateOpenRouterCompletion = async (model, messages) => {
     const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -74,4 +90,4 @@ const generateOllamaCompletion = async (url, model, messages) => {
     return json.message.content
 }
 
-module.exports = { getOpenRouterModels, generateOpenRouterCompletion, generateOllamaCompletion }
+module.exports = { getOpenRouterModels, getOllamaModels, generateOpenRouterCompletion, generateOllamaCompletion }

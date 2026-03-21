@@ -32,20 +32,28 @@ const getAvailableModels = async() => {
             }
         })
 
-        const processedLocalModels = availableModels.local.map(m => {
-            const maxTokens = Math.min(config.ai.maxTokens, 4096)
+        const processedLocalModels = await Promise.all(
+            availableModels.local.map(async m => {
+                const localModels = await aiService.getOllamaModels(m.url)
 
-            return {
-                url: m.url,
-                model: m.model,
-                name: m.name,
-                description: m.description,
-                max_tokens: maxTokens,
-                type: 'local'
-            }
-        })
+                if(!localModels.some(model => model.model === m.model)) {
+                    return []
+                }
 
-        cachedModels = [...processedExternalModels, ...processedLocalModels]
+                const maxTokens = Math.min(config.ai.maxTokens, 4096)
+
+                return [{
+                    url: m.url,
+                    model: m.model,
+                    name: m.name,
+                    description: m.description,
+                    max_tokens: maxTokens,
+                    type: 'local'
+                }]
+            })
+        )
+
+        cachedModels = [...processedExternalModels, ...processedLocalModels.flat()]
     }
 
     return cachedModels
