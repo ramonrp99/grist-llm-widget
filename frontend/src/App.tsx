@@ -93,6 +93,11 @@ export default function App() {
 
             addMessage(false, errMessage, undefined, true)
             setIsGenerating(false)
+
+            setInputValues({
+                prompt: message,
+                context: context
+            })
         }
     }
 
