@@ -14,15 +14,17 @@ import type { THistoryMessage } from './types/TMessage';
 import type { TModel } from './types/TModel';
 import AppAlert from './components/core/AppAlert';
 import { preparePrompt } from './utils/promptShaper';
+import AppSpinner from './components/core/AppSpinner';
 
 export default function App() {
+    const [isLoading, setIsLoading] = useState(true)
     const [isGenerating, setIsGenerating] = useState(false)
     const [inputValues, setInputValues] = useState<TForm | undefined>(undefined)
     const [models, setModels] = useState<TModel[]>([])
     const [error, setError] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
 
-    const {messages, addMessage, updateLastMessage} = useChat()
+    const {messages, addMessage, updateMessage} = useChat()
     const {isReady, row, table} = useGrist()
 
     useEffect(() => {
@@ -35,6 +37,7 @@ export default function App() {
                 }
 
                 setModels(models)
+                setIsLoading(false)
             } catch(err) {
                 const errMessage = err instanceof Error ? err.message : 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.'
                 
@@ -47,12 +50,16 @@ export default function App() {
     }, [])
 
     const onSendMessage = async (message: string, context: string, model: string, turnstileToken: string) => {
+        const history = messages
+        
+        // Mensaje del usuario
+        const userMsgId = addMessage(true, message)
+
+        setIsGenerating(true)
+        // Se añade mensaje de respuesta vacio con isLoading a true para mostrar spinner de carga
+        const responseMsgId = addMessage(false, '', undefined, true)
+
         try {
-            const history = messages
-
-            addMessage(true, message)
-            setIsGenerating(true)
-
             if(!isReady) {
                 throw new Error('Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.')
             }
@@ -83,15 +90,17 @@ export default function App() {
             const data = await generateCompletion(truncatedData.prompt, truncatedData.context, model, truncatedData.history, turnstileToken)
             const dataTable = data.table ? extractTableData(data.table) : undefined
 
-            addMessage(false, data.text, dataTable)
+            // Acualizar mensaje de respuesta con los datos obtenidos
+            updateMessage(responseMsgId, {text: data.text, table: dataTable, isLoading: false})
             setIsGenerating(false)
         } catch(err) {
             // Marcar el mensaje del usuario también como error
-            updateLastMessage({error: true})
+            updateMessage(userMsgId, {error: true})
 
             const errMessage = err instanceof Error ? err.message : 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.'
 
-            addMessage(false, errMessage, undefined, true)
+            // Actualizar mensaje de respuesta con el error
+            updateMessage(responseMsgId, {text: errMessage, isLoading: false, error: true})
             setIsGenerating(false)
 
             setInputValues({
@@ -115,6 +124,14 @@ export default function App() {
     const handleAlertClose = () => {
         setError(false)
         setErrorMsg('')
+    }
+
+    if(isLoading) {
+        return (
+            <div className='flex items-center justify-center h-full w-full'>
+                <AppSpinner width={64} height={64} primaryColor='primary' secondaryColor='message'/>
+            </div>
+        )
     }
 
     return (

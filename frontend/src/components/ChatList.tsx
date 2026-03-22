@@ -59,13 +59,11 @@ export default function ChatList({messages}: Readonly<ChatListProps>) {
             resizeObserver.observe(containerRef.current)
         }
 
-        // Scroll automático cuando se añade el mensaje del usaurio
-        if(messages.at(-1)?.isUser){
-            lastUserMessageRef.current?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            })
-        }
+        // Scroll automático al último mensaje del usaurio
+        lastUserMessageRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        })
 
         return () => resizeObserver.disconnect()
     }, [messages, lastUserMessageIndex, updateSpacer])

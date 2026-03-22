@@ -4,27 +4,30 @@ import type { TMessage } from "../types/TMessage"
 export default function useChat() {
     const [messages, setMessages] = useState<TMessage[]>([])
 
-    const addMessage = (isUser: boolean, message: string, table?: string[][], error: boolean = false) => {
+    const addMessage = (isUser: boolean, message: string, table?: string[][], isLoading = false, error: boolean = false) => {
         const msg: TMessage = {
             id: crypto.randomUUID(),
             text: message,
             table: table,
             isUser: isUser,
+            isLoading: isLoading,
             error: error
         }
 
         setMessages(prev => [...prev, msg])
+
+        return msg.id
     }
 
-    const updateLastMessage = (updates: Partial<TMessage>) => {
+    const updateMessage = (id: string, updates: Partial<TMessage>) => {
         setMessages(prev => {
             if(prev.length === 0) return prev
 
-            const lastIndex = prev.length - 1
+            const msgIndex = prev.findIndex(m => m.id === id)
             const updatedMessages = [...prev]
 
-            updatedMessages[lastIndex] = {
-                ...updatedMessages[lastIndex],
+            updatedMessages[msgIndex] = {
+                ...updatedMessages[msgIndex],
                 ...updates
             }
 
@@ -32,5 +35,5 @@ export default function useChat() {
         })
     }
 
-    return {messages, addMessage, updateLastMessage}
+    return {messages, addMessage, updateMessage}
 }
