@@ -82,6 +82,7 @@ export default function ChatList({messages}: Readonly<ChatListProps>) {
                 <div
                     key={message.id}
                     ref={handleMessageRef(index)}
+                    className='flex flex-col'
                 >
                     <ChatMessage message={message}/>
                 </div>
