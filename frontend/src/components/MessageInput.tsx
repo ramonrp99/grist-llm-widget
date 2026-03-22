@@ -104,7 +104,7 @@ export default function MessageInput({models, disabled, initialData, onSend}: Re
                         className="flex h-8 p-1 rounded-full cursor-pointer bg-primary text-secondary hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                     >
                         {disabled || !turnstileToken ? (
-                            <AppSpinner width={24} height={24} primaryColor="primary" secondaryColor="message"/>
+                            <AppSpinner width={24} height={24} primaryColor="text-primary" secondaryColor="text-message"/>
                         ) : (
                             <span className="material-symbols-outlined">send</span>
                         )}

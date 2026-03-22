@@ -43,6 +43,7 @@ export default function App() {
                 
                 setError(true)
                 setErrorMsg(errMessage)
+                setIsLoading(false)
             }
         }
 
@@ -129,7 +130,7 @@ export default function App() {
     if(isLoading) {
         return (
             <div className='flex items-center justify-center h-full w-full'>
-                <AppSpinner width={64} height={64} primaryColor='primary' secondaryColor='message'/>
+                <AppSpinner width={64} height={64} primaryColor='text-primary' secondaryColor='text-message'/>
             </div>
         )
     }

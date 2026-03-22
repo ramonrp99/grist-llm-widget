@@ -15,7 +15,7 @@ export default function ChatMessage({message}: Readonly<ChatMessageProps>) {
         )
     } else if(message.isLoading) {
         return (
-            <AppSpinner width={24} height={24} primaryColor="primary" secondaryColor="message"/>
+            <AppSpinner width={24} height={24} primaryColor="text-primary" secondaryColor="text-message"/>
         )
     } else if(message.error) {
         return (
