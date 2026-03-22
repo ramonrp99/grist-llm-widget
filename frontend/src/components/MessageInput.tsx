@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent, type SyntheticEvent } from "react"
 import type { TModel } from "../types/TModel"
 import type { TForm } from "../types/TForm"
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile"
+import AppSpinner from "./core/AppSpinner"
 
 interface MessageInputProps {
     models: TModel[],
@@ -102,7 +103,11 @@ export default function MessageInput({models, disabled, initialData, onSend}: Re
                         disabled={disabled || !turnstileToken}
                         className="flex h-8 p-1 rounded-full cursor-pointer bg-primary text-secondary hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                     >
-                        <span className="material-symbols-outlined">send</span>
+                        {disabled || !turnstileToken ? (
+                            <AppSpinner width={24} height={24} primaryColor="primary" secondaryColor="message"/>
+                        ) : (
+                            <span className="material-symbols-outlined">send</span>
+                        )}
                     </button>
                 </div>
             </div>

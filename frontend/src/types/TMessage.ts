@@ -3,6 +3,7 @@ export interface TMessage {
     text: string,
     table?: string[][],
     isUser: boolean,
+    isLoading: boolean,
     error: boolean
 }
 
