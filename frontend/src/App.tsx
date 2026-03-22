@@ -152,7 +152,7 @@ export default function App() {
                 <MessageInput models={models} disabled={isGenerating} initialData={inputValues} onSend={onSendMessage}/>
             </section>
             <section className='flex justify-center items-center pb-2'>
-                <p>La IA puede cometer errores. Considera verificar la información importante.</p>
+                <p className='text-xs text-black/80'>La IA puede cometer errores. Considera verificar la información importante.</p>
             </section>
         </div>
     )
