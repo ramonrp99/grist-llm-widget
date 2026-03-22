@@ -151,6 +151,9 @@ export default function App() {
             <section className='p-2 border-2 border-neutral-200 rounded-xl shadow-md'>
                 <MessageInput models={models} disabled={isGenerating} initialData={inputValues} onSend={onSendMessage}/>
             </section>
+            <section className='flex justify-center items-center pb-2'>
+                <p>La IA puede cometer errores. Considera verificar la información importante.</p>
+            </section>
         </div>
     )
 }
