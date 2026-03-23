@@ -28,3 +28,7 @@ export function extractTableData(table: string): string[][] | undefined {
 
     return [header, ...rows]
 }
+
+export function splitTableIntoRows(table: string) {
+    return table.split(/\n/)
+}

@@ -1,49 +1,32 @@
-import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from "react"
-import { getModels } from "../services/aiService"
+import { useRef, useState, type ChangeEvent, type SyntheticEvent } from "react"
 import type { TModel } from "../types/TModel"
-import AppAlert from "./core/AppAlert"
 import type { TForm } from "../types/TForm"
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile"
+import AppSpinner from "./core/AppSpinner"
 
 interface MessageInputProps {
+    models: TModel[],
     disabled: boolean,
     initialData?: TForm,
-    onSend: (message: string, context: string, model: string) => void
+    onSend: (message: string, context: string, model: string, turnstileToken: string) => void
 }
 
-export default function MessageInput({disabled, initialData, onSend}: Readonly<MessageInputProps>) {
-    const [message, setMessage] = useState('')
-    const [context, setContext] = useState('')
-    const [models, setModels] = useState<TModel[]>([])
-    const [error, setError] = useState(false)
-    const [errorMsg, setErrorMsg] = useState('')
+export default function MessageInput({models, disabled, initialData, onSend}: Readonly<MessageInputProps>) {
+    const [message, setMessage] = useState(initialData?.prompt || '')
+    const [context, setContext] = useState(initialData?.context || '')
 
-    useEffect(() => {
-        if(initialData) {
-            setMessage(initialData.prompt)
-            setContext(initialData.context)
-        }
-    }, [initialData])
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+    const turnstileRef = useRef<TurnstileInstance>(null)
 
-    useEffect(() => {
-        const loadModels = async () => {
-            try {
-                const models = await getModels()
+    // Comprobar si initialData ha cambiado sin provocar el renderizado en cascada que provocaría el uso de useEffect en esta funcionalidad
+    const [prevInitialData, setPrevInitialData] = useState(initialData)
 
-                if(models.length === 0) {
-                    throw new Error('No se han encontrado modelos disponibles. Por favor, ponte en contacto con el administrador.')
-                }
+    if(initialData !== prevInitialData) {
+        setPrevInitialData(initialData)
 
-                setModels(models)
-            } catch(err) {
-                const errMessage = err instanceof Error ? err.message : 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.'
-                
-                setError(true)
-                setErrorMsg(errMessage)
-            }
-        }
-
-        loadModels()
-    }, [])
+        setMessage(initialData?.prompt || '')
+        setContext(initialData?.context || '')
+    }
 
     const handlePromptChange = (e: ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value)
@@ -59,14 +42,17 @@ export default function MessageInput({disabled, initialData, onSend}: Readonly<M
         const formData = new FormData(e.currentTarget)
         const model: string = formData.get('model') as string
 
-        onSend(message, context, model)
+        if(turnstileToken) {
+            onSend(message, context, model, turnstileToken)
 
-        setMessage('')
+            setMessage('')
+            setTurnstileToken(null)
+            turnstileRef.current?.reset()
+        }
     }
 
-    const handleAlertClose = () => {
-        setError(false)
-        setErrorMsg('')
+    const handleTurnstileSuccess = (token: string) => {
+        setTurnstileToken(token)
     }
 
     return (
@@ -74,9 +60,6 @@ export default function MessageInput({disabled, initialData, onSend}: Readonly<M
             onSubmit={handleSubmit}
             className="flex flex-col gap-2 min-w-0 w-full"
         >
-            {error ? (
-                <AppAlert message={errorMsg} onClose={handleAlertClose}/>
-            ): null}
             <div>
                 <input
                     type="text"
@@ -117,13 +100,18 @@ export default function MessageInput({disabled, initialData, onSend}: Readonly<M
                     </select>
                     <button
                         type="submit"
-                        disabled={disabled}
+                        disabled={disabled || !turnstileToken}
                         className="flex h-8 p-1 rounded-full cursor-pointer bg-primary text-secondary hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed"
                     >
-                        <span className="material-symbols-outlined">send</span>
+                        {disabled || !turnstileToken ? (
+                            <AppSpinner width={24} height={24} primaryColor="text-primary" secondaryColor="text-message"/>
+                        ) : (
+                            <span className="material-symbols-outlined">send</span>
+                        )}
                     </button>
                 </div>
             </div>
+            <Turnstile ref={turnstileRef} siteKey={import.meta.env.VITE_CF_TURNSTILE_SITE_KEY} onSuccess={handleTurnstileSuccess}/>
         </form>
     )
 }

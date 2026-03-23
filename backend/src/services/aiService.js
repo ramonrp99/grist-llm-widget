@@ -22,14 +22,20 @@ const getOpenRouterModels = async () => {
     return json.data
 }
 
-// Obtener listado de modelos locales disponibles
-const getLocalModels = async () => {
+// Obtener listado de modelos disponibles en una url de Ollama
+const getOllamaModels = async (url) => {
+    const res = await fetch(`${url}/api/tags`)
 
-}
+    const json = await res.json()
 
-// Obtener listado de modelos disponibles
-const getAvailableModels = async () => {
-    return await getOpenRouterModels()
+    if(!res.ok || json.error) {
+        const message = json.error.message || `Error al obtener los modelos de Ollama`
+        const statusCode = res.status || 500
+
+        throw new AppError(statusCode, message)
+    }
+
+    return json.models
 }
 
 // Enviar prompt a modelo de OpenRouter
@@ -58,14 +64,30 @@ const generateOpenRouterCompletion = async (model, messages) => {
     return json.choices[0].message.content
 }
 
-// Enviar prompt a modelo local
-const generateLocalCompletion = async (data) => {
+// Enviar prompt a modelo de Ollama
+const generateOllamaCompletion = async (url, model, messages) => {
+    const res = await fetch(`${url}/api/chat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            'model': model,
+            'messages': messages,
+            'stream': false
+        })
+    })
 
+    const json = await res.json()
+
+    if(!res.ok || json.error) {
+        const message = json.error.message || 'Error al generar una respuesta con Ollama'
+        const statusCode = res.status || 500
+
+        throw new AppError(statusCode, message)
+    }
+
+    return json.message.content
 }
 
-// Enviar prompt al modelo seleccionado
-const generateCompletion = async (model, messages) => {
-    return await generateOpenRouterCompletion(model, messages)
-}
-
-module.exports = { getAvailableModels, generateCompletion }
+module.exports = { getOpenRouterModels, getOllamaModels, generateOpenRouterCompletion, generateOllamaCompletion }
