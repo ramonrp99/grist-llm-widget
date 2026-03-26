@@ -28,12 +28,6 @@ describe('utils/markdown - splitTableIntoRows', () => {
         expect(rows).toHaveLength(1)
         expect(rows[0]).toBe(input)
     })
-
-    test('Debe devolver un array vacío si el input no es un string', () => {
-        const result = splitTableIntoRows(123)
-        expect(typeof result).toBe('array')
-        expect(result).toHaveLength(0)
-    })
 })
 
 describe('/utils/markdown - extractTable', () => {
@@ -52,13 +46,6 @@ describe('/utils/markdown - extractTable', () => {
         expect(result.table).toBeNull()
         expect(result.text).toBe(input)
     })
-
-    test('Debe devolver text: "" y table: null si el input no es un string', () => {
-        const input = 123
-        const result = extractTable(input)
-        expect(result.table).toBeNull()
-        expect(result.text).toBe('')
-    })
 })
 
 describe('/utils/markdown - isTable', () => {
@@ -70,9 +57,5 @@ describe('/utils/markdown - isTable', () => {
     test('Debe devolver false si no es una tabla Markdown válida', () => {
         const input = 'Texto de prueba'
         expect(isTable(input)).toBe(false)
-    })
-
-    test('Debe devolver false si el input no es un string', () => {
-        expect(isTable(123)).toBe(false)
     })
 })

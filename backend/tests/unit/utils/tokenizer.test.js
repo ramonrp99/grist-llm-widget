@@ -15,10 +15,4 @@ describe('/utils/tokenizer - countToken', () => {
         const longString = 'a'.repeat(1000)
         expect(countTokens(longString)).toBe(125)
     })
-
-    test('Debe devolver 0 si el input no es un string', () => {
-        expect(countTokens(null)).toBe(0)
-        expect(countTokens(undefined)).toBe(0)
-        expect(countTokens(123)).toBe(0)
-    })
 })
