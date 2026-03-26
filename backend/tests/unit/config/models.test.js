@@ -44,7 +44,7 @@ describe('config/models', () => {
         const { availableModels } = require('../../../src/config/models')
 
         expect(availableModels).toEqual({external: [], local: models.local})
-        expect(console.error).not.toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalled()
     })
 
     test('Debe mostrar error por consola y no cargar un modelo externo si su campo model está vacío', () => {
@@ -62,7 +62,7 @@ describe('config/models', () => {
         const { availableModels } = require('../../../src/config/models')
 
         expect(availableModels).toEqual({external: [{model: 'google/gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', description: 'Descripción'}], local: models.local})
-        expect(console.error).not.toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalled()
     })
 
     test('Debe mostrar error por consola y no cargar un modelo local si le falta algún campo obligatorio', () => {
@@ -82,7 +82,7 @@ describe('config/models', () => {
         const { availableModels } = require('../../../src/config/models')
 
         expect(availableModels).toEqual({external: models.external, local: []})
-        expect(console.error).not.toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalled()
     })
 
     test('Debe mostrar error por consola y no cargar un modelo local si su campo url o model está vacío', () => {
@@ -100,6 +100,6 @@ describe('config/models', () => {
         const { availableModels } = require('../../../src/config/models')
 
         expect(availableModels).toEqual({external: models.external, local: []})
-        expect(console.error).not.toHaveBeenCalled()
+        expect(console.error).toHaveBeenCalled()
     })
 })
