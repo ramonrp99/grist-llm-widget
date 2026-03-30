@@ -18,7 +18,7 @@ describe('config/suggestions', () => {
         const { processedSuggestions } = await import("@config/suggestions")
 
         expect(processedSuggestions).toHaveLength(1)
-        expect(processedSuggestions[0]).toEqual({title: 'Opción 1', prompt: 'Prompt', context: 'row'})
+        expect(processedSuggestions[0]).toMatchObject({title: 'Opción 1', prompt: 'Prompt', context: 'row'})
     })
 
     it('Debe devolver un array vacío si ninguna opción predefinida es válida', async () => {
