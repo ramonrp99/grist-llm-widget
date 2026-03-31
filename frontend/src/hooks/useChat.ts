@@ -24,6 +24,9 @@ export default function useChat() {
             if(prev.length === 0) return prev
 
             const msgIndex = prev.findIndex(m => m.id === id)
+
+            if(msgIndex === -1) return prev
+            
             const updatedMessages = [...prev]
 
             updatedMessages[msgIndex] = {
