@@ -13,7 +13,7 @@ interface MessageInputProps {
 
 export default function MessageInput({models, disabled, initialData, onSend}: Readonly<MessageInputProps>) {
     const [message, setMessage] = useState(initialData?.prompt || '')
-    const [context, setContext] = useState(initialData?.context || '')
+    const [context, setContext] = useState(initialData?.context || 'row')
 
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
     const turnstileRef = useRef<TurnstileInstance>(null)
