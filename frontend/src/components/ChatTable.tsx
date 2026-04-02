@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import useGrist from "../hooks/useGrist"
 import AppAlert from "./core/AppAlert"
+import AppSpinner from "./core/AppSpinner"
 
 interface ChatTableProps {
     data: string[][]
@@ -37,6 +38,7 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
 
     const [isEditing, setIsEditing] = useState(false)
     const [isSaved, setIsSaved] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
     const [editableRows, setEditableRows] = useState<RowData[]>(rows)
 
     useEffect(() => {
@@ -73,6 +75,8 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
 
     const handleSaveClick = async () => {
         try {
+            setIsSaving(true)
+
             const headers = header.filter((_, index) => index !== idColumnIndex)
             const finalData = [...editableRows.map(row => row.cells)]
 
@@ -90,8 +94,10 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
 
             setIsEditing(false)
             setIsSaved(true)
+            setIsSaving(false)
         } catch(err) {
             setError(true)
+            setIsSaving(false)
             console.error('Error al guardar los datos en Grist:', err)
         }
     }
@@ -152,35 +158,41 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
                 </table>
             </div>
             <div className="flex flex-row gap-2 justify-end">
-                {isSaved ? (
-                    <p
-                        className="flex flex-row gap-0.5 text-primary font-semibold"
-                    >
-                        <span className="material-symbols-outlined">check</span>
-                        <span>Guardado</span>
-                    </p>
+                {isSaving ? (
+                    <div className="p-2">
+                        <AppSpinner width={24} height={24} primaryColor="text-primary" secondaryColor="text-message"/>
+                    </div>
                 ) : (<>
-                    {isEditing ? (
-                        <button
-                            onClick={handleCancelClick}
-                            className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-red-500 border-red-500 font-semibold hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-red-100"
+                    {isSaved ? (
+                        <p
+                            className="flex flex-row gap-0.5 pr-2 text-primary font-semibold"
                         >
-                            Cancelar
-                        </button>
-                    ) : (
+                            <span className="material-symbols-outlined">check</span>
+                            <span>Guardado</span>
+                        </p>
+                    ) : (<>
+                        {isEditing ? (
+                            <button
+                                onClick={handleCancelClick}
+                                className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-red-500 border-red-500 font-semibold hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-red-100"
+                            >
+                                Cancelar
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleEditClick}
+                                className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-primary border-primary font-semibold hover:bg-message-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-message-hover"
+                            >
+                                Editar
+                            </button>
+                        )}
                         <button
-                            onClick={handleEditClick}
-                            className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-primary border-primary font-semibold hover:bg-message-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-message-hover"
+                            onClick={handleSaveClick}
+                            className="px-2 py-1 rounded-md cursor-pointer bg-primary text-secondary font-semibold hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover"
                         >
-                            Editar
+                            Guardar
                         </button>
-                    )}
-                    <button
-                        onClick={handleSaveClick}
-                        className="px-2 py-1 rounded-md cursor-pointer bg-primary text-secondary font-semibold hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover"
-                    >
-                        Guardar
-                    </button>
+                    </>)}
                 </>)}
             </div>
         </div>
