@@ -8,7 +8,8 @@ export function getTruncatedHistory(history: THistoryMessage[], availableTokens:
 
     // Incluye mensajes del historial hasta alcanzar el límite (de más reciente a más antiguo)
     for(let i = history.length - 1; i >= 0; i--) {
-        const messageTokens = countTokens(history[i].content)
+        const totalMessage = history[i].content + (history[i].table ? '\n' + history[i].table : '')
+        const messageTokens = countTokens(totalMessage)
 
         if (currentTokens + messageTokens <= availableTokens) {
             truncatedHistory.unshift(history[i])
