@@ -2,13 +2,12 @@
     "extends": "./tsconfig.app.json",
     "compilerOptions": {
         "composite": true,
-        "baseUrl": ".",
         "paths": {
-            "@components/*": ["src/components/*"],
-            "@config/*": ["src/config/*"],
-            "@hooks/*": ["src/hooks/*"],
-            "@customTypes/*": ["src/types/*"],
-            "@utils/*": ["src/utils/*"]
+            "@components/*": ["./src/components/*"],
+            "@config/*": ["./src/config/*"],
+            "@hooks/*": ["./src/hooks/*"],
+            "@customTypes/*": ["./src/types/*"],
+            "@utils/*": ["./src/utils/*"]
         },
         "types": ["vitest/globals", "@testing-library/jest-dom"]
     },
