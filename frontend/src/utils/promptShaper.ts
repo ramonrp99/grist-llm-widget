@@ -61,7 +61,7 @@ export function preparePrompt(userPrompt: string, context: string, history: THis
     const userPromptTokens = countTokens(userPrompt)
     
     const fullContextTokens = countTokens(context)
-    const fullHistoryTokens = history.reduce((sum, msg) => sum + countTokens(msg.content), 0)
+    const fullHistoryTokens = history.reduce((sum, msg) => sum + countTokens(msg.content + (msg.table ? '\n' + msg.table : '')), 0)
 
     const baseTokens = userPromptTokens
     const totalTokens = baseTokens + fullContextTokens + fullHistoryTokens
