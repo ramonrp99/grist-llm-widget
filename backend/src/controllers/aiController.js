@@ -86,7 +86,14 @@ const generateCompletion = async(req, res, next) => {
         const models = await getAvailableModels()
         const modelInfo = models.find(m => m.model === model)
 
-        const totalMessages = buildChatMessages(prompt, context, messages, modelInfo.max_tokens)
+        const processedMessages = messages.map(message => {
+            return {
+                role: message.role,
+                content: message.content + (message.table ? '\n```md' + message.table + '```' : '')
+            }
+        })
+
+        const totalMessages = buildChatMessages(prompt, context, processedMessages, modelInfo.max_tokens)
 
         const response = await (modelInfo.type === 'local'
             ? aiService.generateOllamaCompletion(modelInfo.url, model, totalMessages)
