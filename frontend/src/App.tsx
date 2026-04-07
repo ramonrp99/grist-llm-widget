@@ -58,7 +58,7 @@ export default function App() {
 
         setIsGenerating(true)
         // Se añade mensaje de respuesta vacio con isLoading a true para mostrar spinner de carga
-        const responseMsgId = addMessage(false, '', undefined, true)
+        const responseMsgId = addMessage(false, '', undefined, undefined, true)
 
         try {
             if(!isReady) {
@@ -81,7 +81,8 @@ export default function App() {
 
                 return [{
                     role: message.isUser ? 'user' : 'assistant',
-                    content: message.text
+                    content: message.text,
+                    table: message.mdTable ?? ''
                 }]
             })
 
@@ -92,7 +93,7 @@ export default function App() {
             const dataTable = data.table ? extractTableData(data.table) : undefined
 
             // Acualizar mensaje de respuesta con los datos obtenidos
-            updateMessage(responseMsgId, {text: data.text, table: dataTable, isLoading: false})
+            updateMessage(responseMsgId, {text: data.text, table: dataTable, isLoading: false, mdTable: data.table ?? undefined})
             setIsGenerating(false)
         } catch(err) {
             // Marcar el mensaje del usuario también como error

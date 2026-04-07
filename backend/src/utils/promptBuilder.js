@@ -78,12 +78,12 @@ const buildChatMessages = (userPrompt, context, history, maxTokens) => {
         return [
             {
                 role: 'system',
-                content: `${systemPrompt}\n\n${context}`
+                content: systemPrompt
             },
             ...history,
             {
                 role: 'user',
-                content: userPrompt
+                content: `${userPrompt}\n### DATOS DE CONTEXTO ACTUAL:\n${context}`
             }
         ]
     }
@@ -116,12 +116,12 @@ const buildChatMessages = (userPrompt, context, history, maxTokens) => {
     return [
         {
             role: 'system',
-            content: `${systemPrompt}\n\n${finalContext}`
+            content: systemPrompt
         },
         ...finalHistory,
         {
             role: 'user',
-            content: userPrompt
+            content: `${userPrompt}\n### DATOS DE CONTEXTO ACTUAL:\n${finalContext}`
         }
     ]
 }

@@ -20,16 +20,16 @@ describe('utils/promptBuilder - buildChatMessages', () => {
         const context = '| id | nombre |\n| --- | --- |\n| 1 | Test |'
         const history = [
             {role: 'user', content: 'Antiguo'},
-            {role: 'assistant', content: 'Nuevo'}
+            {role: 'assistant', content: 'Nuevo\n```md| id | nombre |\n| --- | --- |\n| 2 | Test2 |```'}
         ]
 
-        const result = buildChatMessages(userPrompt, context, history, 100)
+        const result = buildChatMessages(userPrompt, context, history, 200)
 
         expect(result).toHaveLength(4)
-        expect(result[0]).toEqual({role: 'system', content: `System\n\n${context}`})
+        expect(result[0]).toEqual({role: 'system', content: 'System'})
         expect(result[1]).toEqual({role: 'user', content: 'Antiguo'})
-        expect(result[2]).toEqual({role: 'assistant', content: 'Nuevo'})
-        expect(result[3]).toEqual({role: 'user', content: userPrompt})
+        expect(result[2]).toEqual({role: 'assistant', content: 'Nuevo\n```md| id | nombre |\n| --- | --- |\n| 2 | Test2 |```'})
+        expect(result[3]).toEqual({role: 'user', content: `${userPrompt}\n### DATOS DE CONTEXTO ACTUAL:\n${context}`})
     })
 
     test('Truncado de historial - Debe mantener el contexto y truncar el historial (quitar antiguos)', () => {
@@ -43,9 +43,9 @@ describe('utils/promptBuilder - buildChatMessages', () => {
         const result = buildChatMessages(userPrompt, context, history, 60)
 
         expect(result).toHaveLength(3)
-        expect(result[0]).toEqual({role: 'system', content: `System\n\n${context}`})
+        expect(result[0]).toEqual({role: 'system', content: 'System'})
         expect(result[1]).toEqual({role: 'assistant', content: 'Nuevo'})
-        expect(result[2]).toEqual({role: 'user', content: userPrompt})
+        expect(result[2]).toEqual({role: 'user', content: `${userPrompt}\n### DATOS DE CONTEXTO ACTUAL:\n${context}`})
     })
 
     test('Truncado de contexto - Debe eliminar el historial y truncar filas de la tabla de contexto', () => {
@@ -59,8 +59,8 @@ describe('utils/promptBuilder - buildChatMessages', () => {
         const result = buildChatMessages(userPrompt, context, history, 60)
 
         expect(result).toHaveLength(2)
-        expect(result[0]).toEqual({role: 'system', content: 'System\n\n| id | nombre |\n| --- | --- |\n| 1 | Test |'})
-        expect(result[1]).toEqual({role: 'user', content: userPrompt})
+        expect(result[0]).toEqual({role: 'system', content: 'System'})
+        expect(result[1]).toEqual({role: 'user', content: `${userPrompt}\n### DATOS DE CONTEXTO ACTUAL:\n| id | nombre |\n| --- | --- |\n| 1 | Test |`})
     })
 
     test('Truncado de contexto - Debe lanzar AppError si las 3 filas mínimas de la tabla ya exeden el límite', () => {

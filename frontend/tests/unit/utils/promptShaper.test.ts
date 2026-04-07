@@ -15,10 +15,10 @@ describe('utils/promptShaper - preparePrompt', () => {
         const context = '| id | nombre |\n| --- | --- |\n| 1 | Test |'
         const history: THistoryMessage[] = [
             {role: 'user', content: 'Antiguo'},
-            {role: 'assistant', content: 'Nuevo'}
+            {role: 'assistant', content: 'Nuevo', table: '| id | nombre |\n| --- | --- |\n| 2 | Test2 |'}
         ]
 
-        const result = preparePrompt(userPrompt, context, history, 100)
+        const result = preparePrompt(userPrompt, context, history, 110)
 
         expect(result).toEqual({
             prompt: userPrompt,
