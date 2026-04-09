@@ -5,7 +5,8 @@ const { availableModels } = require('../config/models')
 
 const messageSchema = z.object({
     role: z.enum(['user', 'assistant']),
-    content: z.string().nonempty().max(config.schemas.messagesSchema.content.maxLength)
+    content: z.string().nonempty().max(config.schemas.messagesSchema.content.maxLength),
+    table: z.string().max(config.schemas.messagesSchema.table.maxLength)
 })
 
 const promptSchema = z.object({

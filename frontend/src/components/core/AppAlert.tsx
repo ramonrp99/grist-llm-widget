@@ -29,17 +29,3 @@ export default function AppAlert({message, onClose}: Readonly<AppAlertProps>) {
         </div>
     ), document.body)
 }
-
-/*
-<button
-    className="absolute inset-0 border-none p-0 bg-gray-200/60 backdrop-blur-[1px]"
-    onClick={onClose}
-/>
-<div
-    className="relative flex flex-col gap-2 rounded-md p-4 bg-secondary shadow-md"
->
-    <p>{message}</p>
-    <button onClick={onClose}>Cerrar</button>
-</div>
-
-*/

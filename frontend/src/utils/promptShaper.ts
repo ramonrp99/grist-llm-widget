@@ -8,7 +8,8 @@ export function getTruncatedHistory(history: THistoryMessage[], availableTokens:
 
     // Incluye mensajes del historial hasta alcanzar el límite (de más reciente a más antiguo)
     for(let i = history.length - 1; i >= 0; i--) {
-        const messageTokens = countTokens(history[i].content)
+        const totalMessage = history[i].content + (history[i].table ? '\n' + history[i].table : '')
+        const messageTokens = countTokens(totalMessage)
 
         if (currentTokens + messageTokens <= availableTokens) {
             truncatedHistory.unshift(history[i])
@@ -60,7 +61,7 @@ export function preparePrompt(userPrompt: string, context: string, history: THis
     const userPromptTokens = countTokens(userPrompt)
     
     const fullContextTokens = countTokens(context)
-    const fullHistoryTokens = history.reduce((sum, msg) => sum + countTokens(msg.content), 0)
+    const fullHistoryTokens = history.reduce((sum, msg) => sum + countTokens(msg.content + (msg.table ? '\n' + msg.table : '')), 0)
 
     const baseTokens = userPromptTokens
     const totalTokens = baseTokens + fullContextTokens + fullHistoryTokens

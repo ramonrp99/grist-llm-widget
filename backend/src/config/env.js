@@ -43,6 +43,9 @@ const config = {
         messagesSchema: {
             content: {
                 maxLength: Number.parseInt(process.env.MAX_MESSAGE_CONTENT_LENGTH) || 500
+            },
+            table: {
+                maxLength: Number.parseInt(process.env.MAX_MESSAGE_TABLE_LENGTH) || 500
             }
         },
     },
