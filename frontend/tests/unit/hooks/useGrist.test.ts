@@ -47,7 +47,10 @@ describe('useGrist', () => {
             onRecordCallback({id: 1, nombre: 'Test'})
         })
 
-        expect(result.current.row).toEqual({id: 1, nombre: 'Test'})
+        await waitFor(() => {
+            expect(result.current.row).toEqual({id: 1, nombre: 'Test'})
+        })
+        
         expect(result.current.isReady).toBe(true)
     })
 
@@ -61,10 +64,13 @@ describe('useGrist', () => {
             ])
         })
 
-        expect(result.current.table).toEqual([
-            {id: 1, nombre: 'Test'},
-            {id: 2, nombre: 'Test 2'}
-        ])
+        await waitFor(() => {
+            expect(result.current.table).toEqual([
+                {id: 1, nombre: 'Test'},
+                {id: 2, nombre: 'Test 2'}
+            ])
+        })
+        
         expect(result.current.isReady).toBe(true)
     })
 
