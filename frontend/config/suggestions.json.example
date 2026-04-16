@@ -15,8 +15,8 @@
         "context": "table"
     },
     {
-        "title": "Generar descripción",
-        "prompt": "Genera una descripción técnica y detallada de los datos enviados.",
+        "title": "Normalizar texto",
+        "prompt": "Limpia y normaliza los campos de texto: corrige la ortografía, ajusta las mayúsculas y minúsculas de forma profesional, elimina espacios innecesarios y estandariza el formato.",
         "context": "row"
     }
 ]

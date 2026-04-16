@@ -1,3 +1,4 @@
+import Markdown from "react-markdown"
 import type { TMessage } from "../types/TMessage"
 import ChatTable from "./ChatTable"
 import AppSpinner from "./core/AppSpinner"
@@ -27,7 +28,9 @@ export default function ChatMessage({message}: Readonly<ChatMessageProps>) {
     } else {
         return (
             <div className="flex flex-col gap-4 items-start">
-                <p className="text-left wrap-break-word">{message.text}</p>
+                <div className="text-left wrap-break-word">
+                    <Markdown>{message.text}</Markdown>
+                </div>
                 {message.table && (
                     <ChatTable data={message.table}/>
                 )}
