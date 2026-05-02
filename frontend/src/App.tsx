@@ -50,6 +50,24 @@ export default function App() {
         loadModels()
     }, [])
 
+    const validateResponseData = (gristData: TGristRow[], responseData: string[][]) => {
+        const gristIds = new Set(gristData.map(row => row.id))
+
+        if(responseData) {
+            const [header, ...rows] = responseData
+            const idColumnIndex = header[0].indexOf('id')
+            const responseDataIds = rows.flatMap(row => {
+                return row[idColumnIndex] ? [Number(row[idColumnIndex])] : []
+            })
+
+            if(responseDataIds) {
+                return responseDataIds.every(responseDataId => gristIds.has(responseDataId))
+            }
+        }
+
+        return true
+    }
+
     const onSendMessage = async (message: string, context: string, model: string, turnstileToken: string) => {
         const history = messages
         
@@ -92,8 +110,14 @@ export default function App() {
             const data = await generateCompletion(truncatedData.prompt, truncatedData.context, model, truncatedData.history, turnstileToken)
             const dataTable = data.table ? extractTableData(data.table) : undefined
 
+            let isResponseDataValid = true
+
+            if(dataTable) {
+                isResponseDataValid = validateResponseData(gristData, dataTable)
+            }
+
             // Acualizar mensaje de respuesta con los datos obtenidos
-            updateMessage(responseMsgId, {text: data.text, table: dataTable, isLoading: false, mdTable: data.table ?? undefined})
+            updateMessage(responseMsgId, {text: data.text, table: dataTable, tableError: !isResponseDataValid, isLoading: false, mdTable: data.table ?? undefined})
             setIsGenerating(false)
         } catch(err) {
             // Marcar el mensaje del usuario también como error

@@ -5,7 +5,8 @@ export interface TMessage {
     mdTable?: string,
     isUser: boolean,
     isLoading: boolean,
-    error: boolean
+    error: boolean,
+    tableError: boolean
 }
 
 export interface THistoryMessage {

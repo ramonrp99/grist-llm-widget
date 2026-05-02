@@ -32,7 +32,7 @@ export default function ChatMessage({message}: Readonly<ChatMessageProps>) {
                     <Markdown>{message.text}</Markdown>
                 </div>
                 {message.table && (
-                    <ChatTable data={message.table}/>
+                    <ChatTable data={message.table} dataError={message.tableError}/>
                 )}
             </div>
         )
