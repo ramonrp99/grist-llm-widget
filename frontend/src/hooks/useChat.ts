@@ -4,7 +4,7 @@ import type { TMessage } from "../types/TMessage"
 export default function useChat() {
     const [messages, setMessages] = useState<TMessage[]>([])
 
-    const addMessage = (isUser: boolean, message: string, table?: string[][], mdTable?: string, isLoading = false, error: boolean = false) => {
+    const addMessage = (isUser: boolean, message: string, table?: string[][], mdTable?: string, isLoading = false, error: boolean = false, tableError: boolean = false) => {
         const msg: TMessage = {
             id: crypto.randomUUID(),
             text: message,
@@ -12,7 +12,8 @@ export default function useChat() {
             mdTable: mdTable,
             isUser: isUser,
             isLoading: isLoading,
-            error: error
+            error: error,
+            tableError: tableError
         }
 
         setMessages(prev => [...prev, msg])

@@ -4,7 +4,8 @@ import AppAlert from "./core/AppAlert"
 import AppSpinner from "./core/AppSpinner"
 
 interface ChatTableProps {
-    data: string[][]
+    data: string[][],
+    dataError: boolean
 }
 
 interface RowData {
@@ -12,7 +13,7 @@ interface RowData {
     cells: string[]
 }
 
-export default function ChatTable({data}: Readonly<ChatTableProps>) {
+export default function ChatTable({data, dataError}: Readonly<ChatTableProps>) {
     const {updateRow, addRow} = useGrist()
     const [error, setError] = useState(false)
 
@@ -158,40 +159,49 @@ export default function ChatTable({data}: Readonly<ChatTableProps>) {
                 </table>
             </div>
             <div className="flex flex-row gap-2 justify-end">
-                {isSaving ? (
-                    <div className="p-2">
-                        <AppSpinner width={24} height={24} primaryColor="text-primary" secondaryColor="text-message"/>
-                    </div>
+                {dataError ? (
+                    <p
+                        className="flex flex-row gap-0.5 pr-2 text-red-500 font-semibold"
+                    >
+                        <span className="material-symbols-outlined">error</span>
+                        <span>La tabla generada es incorrecta, por favor repite la consulta.</span>
+                    </p>
                 ) : (<>
-                    {isSaved ? (
-                        <p
-                            className="flex flex-row gap-0.5 pr-2 text-primary font-semibold"
-                        >
-                            <span className="material-symbols-outlined">check</span>
-                            <span>Guardado</span>
-                        </p>
+                    {isSaving ? (
+                        <div className="p-2">
+                            <AppSpinner width={24} height={24} primaryColor="text-primary" secondaryColor="text-message"/>
+                        </div>
                     ) : (<>
-                        {isEditing ? (
-                            <button
-                                onClick={handleCancelClick}
-                                className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-red-500 border-red-500 font-semibold hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-red-100"
+                        {isSaved ? (
+                            <p
+                                className="flex flex-row gap-0.5 pr-2 text-primary font-semibold"
                             >
-                                Cancelar
-                            </button>
-                        ) : (
+                                <span className="material-symbols-outlined">check</span>
+                                <span>Guardado</span>
+                            </p>
+                        ) : (<>
+                            {isEditing ? (
+                                <button
+                                    onClick={handleCancelClick}
+                                    className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-red-500 border-red-500 font-semibold hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-red-100"
+                                >
+                                    Cancelar
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleEditClick}
+                                    className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-primary border-primary font-semibold hover:bg-message-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-message-hover"
+                                >
+                                    Editar
+                                </button>
+                            )}
                             <button
-                                onClick={handleEditClick}
-                                className="px-2 py-1 border-2 rounded-md cursor-pointer bg-secondary text-primary border-primary font-semibold hover:bg-message-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-message-hover"
+                                onClick={handleSaveClick}
+                                className="px-2 py-1 rounded-md cursor-pointer bg-primary text-secondary font-semibold hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover"
                             >
-                                Editar
+                                Guardar
                             </button>
-                        )}
-                        <button
-                            onClick={handleSaveClick}
-                            className="px-2 py-1 rounded-md cursor-pointer bg-primary text-secondary font-semibold hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:bg-primary-hover"
-                        >
-                            Guardar
-                        </button>
+                        </>)}
                     </>)}
                 </>)}
             </div>
